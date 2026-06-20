@@ -1,4 +1,4 @@
-import { Values } from "../Helper/constants";
+import { Values } from "@/Helper/constants";
 import { Image, Type } from "lucide-react";
 import { Undo2, Redo2 } from "lucide-react";
 function ToolsBar({

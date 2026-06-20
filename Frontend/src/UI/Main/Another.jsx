@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
-import { socket } from '../socket.js';
+import { socket } from '../../socket.js';
 import ToolsBar from './ToolsBar.jsx';
 import { Settings } from './Settings.jsx';
 import { Menu } from 'lucide-react';
@@ -300,7 +300,7 @@ export const Another = () => {
       id: Date.now().toString(),
       left: 300,
       top: 200,
-      fontSize: size || 10,
+      fontSize: size *10,
       fill: color,
       selectable: true
     });

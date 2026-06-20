@@ -17,25 +17,25 @@ export const Settings = ({
     clearCanvas,
     open,
     onOpenChange,
-    background,       // 1. Accept background color state from parent
-     setbackground
-    // 2. Accept background color setter from parent
+    background,
+    setbackground
+
 }) => {
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-        
+
             <SheetContent className="w-[400px] bg-white/30 border-l border-zinc-200 p-6 flex flex-col justify-between">
-                
+
                 <SheetHeader className="mb-2">
                     <SheetTitle className="text-2xl font-extrabold text-zinc-900 tracking-tight">
                         Settings
                     </SheetTitle>
                 </SheetHeader>
 
-                
+
                 <div className="flex-1 flex flex-col gap-5 overflow-y-auto py-2 pr-1">
-                    
-                    
+
+
                     <div className="bg-[#f3ebfc] rounded-2xl p-4 border border-[#e3d5f7] shadow-xs">
                         <div className="flex justify-between items-center mb-2.5">
                             <h3 className="text-xs font-bold uppercase tracking-wider text-[#7d6b99]">
@@ -55,7 +55,7 @@ export const Settings = ({
                         />
                     </div>
 
-                    
+
                     <div className="bg-[#f3ebfc] rounded-2xl p-4 border border-[#e3d5f7] shadow-xs">
                         <div className="flex justify-between items-center mb-2.5">
                             <h3 className="text-xs font-bold uppercase tracking-wider text-[#7d6b99]">
@@ -88,11 +88,10 @@ export const Settings = ({
                                         key={`brush-${swatchColor}`}
                                         type="button"
                                         onClick={() => setcolor(swatchColor)}
-                                        className={`w-8 h-8 rounded-xl border-2 cursor-pointer transition-all ${
-                                            color === swatchColor
+                                        className={`w-8 h-8 rounded-xl border-2 cursor-pointer transition-all ${color === swatchColor
                                                 ? "border-[#9370db] ring-4 ring-[#e9e0fd] scale-105"
                                                 : "border-transparent hover:scale-105"
-                                        }`}
+                                            }`}
                                         style={{ backgroundColor: swatchColor }}
                                         title={swatchColor}
                                     />
@@ -130,11 +129,10 @@ export const Settings = ({
                                         key={`bg-${swatchColor}`}
                                         type="button"
                                         onClick={() => setbackground(swatchColor)}
-                                        className={`w-8 h-8 rounded-xl border-2 cursor-pointer transition-all ${
-                                            background === swatchColor
+                                        className={`w-8 h-8 rounded-xl border-2 cursor-pointer transition-all ${background === swatchColor
                                                 ? "border-[#9370db] ring-4 ring-[#e9e0fd] scale-105"
                                                 : "border-transparent hover:scale-105"
-                                        }`}
+                                            }`}
                                         style={{ backgroundColor: swatchColor }}
                                         title={swatchColor}
                                     />
@@ -162,7 +160,7 @@ export const Settings = ({
 
                 </div>
 
-               
+
                 <div className="space-y-2.5 mt-4 pt-4 border-t border-zinc-100">
                     <button
                         onClick={clearCanvas}
@@ -171,7 +169,7 @@ export const Settings = ({
                         Clear Canvas
                     </button>
                 </div>
-               
+
             </SheetContent>
         </Sheet>
     )
