@@ -1,26 +1,19 @@
 import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import API from './service/API.sevice';
 export const UserContext = createContext(null);
-const API = axios.create({
-    baseURL: import.meta.env.VITE_BASE_API,
-    withCredentials: true
-})
+
 export  const UserProvider = ({ children }) => {
-  const [userData, setUserData] = useState(null);
+  const [user, setUserData] = useState(null);
   const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
 
     API.get('/user/me')
       .then((response) => {
-        
         setUserData(response.data.data);
-        window.location.assign = '/'
-      
       })
       .catch((err) => {
-        console.error("Failed to fetch user data:", err);
-       console.log(err)
+          console.log(err.message)
         setUserData(null); 
       })
       .finally(() => {
@@ -30,7 +23,7 @@ export  const UserProvider = ({ children }) => {
 
   return (
 
-    <UserContext.Provider value={{ userData, loading }}>
+    <UserContext.Provider value={{ user, loading }}>
       {children}
     </UserContext.Provider>
   );

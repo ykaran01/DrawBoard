@@ -4,6 +4,9 @@ import { socket } from '../../socket.js';
 import ToolsBar from './ToolsBar.jsx';
 import { Settings } from './Settings.jsx';
 import { Menu } from 'lucide-react';
+
+import Messages from './Messages.jsx';
+import { MessageCircle } from 'lucide-react';
 export const Another = () => {
   const canvasRef = useRef(null);
   const canvasfileref = useRef(null);
@@ -21,6 +24,7 @@ export const Another = () => {
   const startPointer = useRef({ x: 0, y: 0 });
   const activeShape = useRef(null);
   const arrowref = useRef(null);
+  const [chatopen, setchatopen] = useState(false)
 
   const setupBrush = (canvas, mode, currentStrokeColor, brushWidth, alpha) => {
     if (!canvas) return;
@@ -170,10 +174,10 @@ export const Another = () => {
           id: Date.now().toString()
         })
       } else if (current === "arrow") {
-         
+
         const triangle = new fabric.Triangle({
-          width: size*8,
-          height: size*8,
+          width: size * 8,
+          height: size * 8,
           originX: "center",
           originY: "center",
           angle: 90,
@@ -189,11 +193,11 @@ export const Another = () => {
           strokeUniform: true,
           selectable: false
         })
-        arrowref.current = { line:line, triangle:triangle }
-        
+        arrowref.current = { line: line, triangle: triangle }
+
         canvas.add(line)
         canvas.add(triangle)
-      
+
       }
 
       if (activeShape.current) {
@@ -207,39 +211,39 @@ export const Another = () => {
       const pointerPos = canvas.getScenePoint(options.e);
       const startX = startPointer.current.x;
       const startY = startPointer.current.y;
-      if (isDrawingShape.current  && activeShape.current ){ 
+      if (isDrawingShape.current && activeShape.current) {
 
-      socket.emit("current-address", { id: socket.id, x: pointerPos.x, y: pointerPos.y });
+        socket.emit("current-address", { id: socket.id, x: pointerPos.x, y: pointerPos.y });
 
-      if (current === "rectangle" || current === "triangle") {
-        const left = Math.min(startX, pointerPos.x);
-        const top = Math.min(startY, pointerPos.y);
-        const width = Math.abs(startX - pointerPos.x);
-        const height = Math.abs(startY - pointerPos.y);
+        if (current === "rectangle" || current === "triangle") {
+          const left = Math.min(startX, pointerPos.x);
+          const top = Math.min(startY, pointerPos.y);
+          const width = Math.abs(startX - pointerPos.x);
+          const height = Math.abs(startY - pointerPos.y);
 
-        activeShape.current.set({ left, top, width, height });
-      } else if (current === "circle") {
-        const dx = pointerPos.x - startX;
-        const dy = pointerPos.y - startY;
-        const radius = Math.sqrt(dx * dx + dy * dy) / 2;
-        const left = startX + (dx < 0 ? dx : 0);
-        const top = startY + (dy < 0 ? dy : 0);
+          activeShape.current.set({ left, top, width, height });
+        } else if (current === "circle") {
+          const dx = pointerPos.x - startX;
+          const dy = pointerPos.y - startY;
+          const radius = Math.sqrt(dx * dx + dy * dy) / 2;
+          const left = startX + (dx < 0 ? dx : 0);
+          const top = startY + (dy < 0 ? dy : 0);
 
-        activeShape.current.set({ left, top, radius });
-      } else if (current === "segment") {
-        activeShape.current.set({
-          x1: startX,
-          y1: startY,
-          x2: pointerPos.x,
-          y2: pointerPos.y
-        });
-      } 
-      canvas.renderAll();
-      socket.emit("canvas-data", activeShape.current?.toObject(['id']));
+          activeShape.current.set({ left, top, radius });
+        } else if (current === "segment") {
+          activeShape.current.set({
+            x1: startX,
+            y1: startY,
+            x2: pointerPos.x,
+            y2: pointerPos.y
+          });
+        }
+        canvas.renderAll();
+        socket.emit("canvas-data", activeShape.current?.toObject(['id']));
 
-    }
+      }
       if (arrowref.current) {
-        
+
         const { line, triangle } = arrowref.current
         line.set({
           x1: startX,
@@ -300,7 +304,7 @@ export const Another = () => {
       id: Date.now().toString(),
       left: 300,
       top: 200,
-      fontSize: size *10,
+      fontSize: size * 10,
       fill: color,
       selectable: true
     });
@@ -365,7 +369,7 @@ export const Another = () => {
   }
 
   return (
-    <div className="min-h-screen  relative bg-purple-100 p-6">
+    <div className="min-h-screen w-[100vw overflow-hidden relative bg-purple-100 p-6">
       <div className="flex gap-4 h-[90vh]">
         <ToolsBar
           current={current}
@@ -377,7 +381,7 @@ export const Another = () => {
           handleRedo={handleRedo}
 
         />
-        <div className='w-full h-full shadow shadow-black '>
+        <div className='w-full h-full shadow bg-white shadow-black '>
           <canvas ref={canvasRef} ></canvas>
         </div>
         <Settings
@@ -394,11 +398,19 @@ export const Another = () => {
           setbackground={setbackground}
 
         />
+
+      </div>
+      <Messages chatopen={chatopen} ></Messages>
+      <div onClick={() => {
+        setchatopen(true)
+      }} className='absolute top-9 right-25 cursor-pointer  border border-purple-400 rounded-full bg-white w-10 h-10 flex justify-center items-center' >
+        <MessageCircle size={24} color='#dcb7e1' />
       </div>
       <div onClick={() => {
         onOpenChange(true)
-      }} className='absolute top-9 right-10 cursor-pointer  border border-purple-400 rounded-full bg-white w-10 h-10 flex justify-center items-center' >
+      }} className='absolute top-9 right-10  cursor-pointer  border border-purple-400 rounded-full bg-white w-10 h-10 flex justify-center items-center' >
         <Menu size={24} color='#dcb7e1' />
+
       </div>
     </div>
   );

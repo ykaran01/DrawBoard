@@ -29,11 +29,12 @@ export const verifyotp = async (email, OTP) => {
 
 export const loginUser = async(info)=>{
     try{
+       
         const {data} = await  API.post('/user/login',info)
-        const {accessToken ,refreshToken} = data
-        cook
+        console.log(data)
+    
     }catch(err){
-        console.log(err.message)
+        console.log(err)
     }
     
 

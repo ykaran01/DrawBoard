@@ -1,8 +1,15 @@
 import React, { useState } from 'react'
 import { loginUser } from './service'
-
+import { useNavigate } from 'react-router-dom'
+import { UserContext } from '@/Userprovider'
+import { useContext } from 'react'
 const SignIn = () => {
-
+    const naviagte = useNavigate()
+    const {user} = useContext(UserContext)
+    console.log
+    if(user){
+            naviagte('/')
+    }
     const [info, setinfo] = useState({
         email:"",
         password:""
