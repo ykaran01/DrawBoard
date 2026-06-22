@@ -28,7 +28,7 @@ export const createBoard = asyncHandler(async (req, res) => {
     }
 
     return res.status(201).json(
-        new ApiResponse(201, board, "Board created successfully")
+        new ApiResponse(201,null, "Board created successfully")
     );
 });
 
@@ -75,7 +75,7 @@ export const updateBoard = asyncHandler(async (req, res) => {
     await board.save();
 
     return res.status(200).json(
-        new ApiResponse(200, board, "Board updated successfully")
+        new ApiResponse(200, null, "Board updated successfully")
     );
 });
 

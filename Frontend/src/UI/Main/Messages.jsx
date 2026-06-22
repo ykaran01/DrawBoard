@@ -34,7 +34,7 @@ const Messages = ({ chatopen }) => {
 
     return (
         <div
-            className={`absolute top-0 right-0 z-10 flex h-full  w-full md:w-[23vw]
+            className={`absolute top-0 right-0 z-10 flex min-h-[92%]  w-full md:w-[23vw]
                         transition-all duration-300 ease-in-out
                     ${chatopen
                     ? "translate-x-0 opacity-90"

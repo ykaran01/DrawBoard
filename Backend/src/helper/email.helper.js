@@ -1,5 +1,5 @@
 import { transporter } from "../config/nodemailer.config.js";
-
+import nodemailer from 'nodemailer'
 export const sendMail = async(emailAddress ,otp) => {
     try {
         const info = await transporter.sendMail({

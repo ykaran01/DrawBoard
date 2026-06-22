@@ -13,6 +13,9 @@ export const broradCast = (io, socket) => {
     
         socket.broadcast.emit("canvas_pointer", data)
     })
+    socket.on("message-sent",(data)=>{
+         io.emit("message-recieve", data);
+    })
     socket.on("undo-canvas", (data) => {
         socket.broadcast.emit("undo", data)
     })

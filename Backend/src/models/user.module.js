@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema({
         trim: true,
         unique: true,
         index: true,
-        max: [20, "Username Quite bigger "]
     },
     refreshToken: {
         type: String,
@@ -49,13 +48,11 @@ const userSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
-userSchema.methods.comparePassword = async function (enteredpassword) {
-    return await bcrypt.compare(enteredpassword, this.password)
-}
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return ;
     this.password = await bcrypt.hash(this.password, 10);
-    next();
+
 });
 
 userSchema.index({ createdAt: 1 }, {

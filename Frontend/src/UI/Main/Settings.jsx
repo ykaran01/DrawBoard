@@ -14,7 +14,6 @@ export const Settings = ({
     setSize,
     Opacity,
     setOpacity,
-    clearCanvas,
     open,
     onOpenChange,
     background,
@@ -160,15 +159,6 @@ export const Settings = ({
 
                 </div>
 
-
-                <div className="space-y-2.5 mt-4 pt-4 border-t border-zinc-100">
-                    <button
-                        onClick={clearCanvas}
-                        className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-3 font-bold rounded-xl transition duration-150 active:scale-[0.98] tracking-wide shadow-sm"
-                    >
-                        Clear Canvas
-                    </button>
-                </div>
 
             </SheetContent>
         </Sheet>

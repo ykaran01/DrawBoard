@@ -1,28 +1,34 @@
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
-export const userMiddleware = async(req, res, next) => {
+export const userMiddleware = async (req, res, next) => {
     try {
-        const token  = req.headers['Authorization'].split(" ")[1] || res.cookie("accessToken");
-        if(!token){
-            res.status(404).json({
-                success:false,
-                message:"Could not find the token "
-            })
+       
+        const token = req.cookies?.accessToken; 
+           
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Access token missing. Please log in."
+            });
         }
-        const data = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-        if(!data){
-            res.status(200).json({
-                success:false,
-                message:"Token is not correct"
-                
-        })
-        }
-        req.user = data
-        next()
+        
+        const decodedData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-     } catch (err) {
-        throw new Error("Something went wrong In JWt Token")
+        req.user = decodedData;
+        
+        next();
+
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                message: "Access token expired" 
+            });
+        }
+
+        return res.status(401).json({
+            success: false,
+            message: "Invalid token verification failed"
+        });
     }
-
-
-}
+};

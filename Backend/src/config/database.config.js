@@ -2,11 +2,10 @@ import mongoose from 'mongoose'
 
 export   const connectDB = async()=>{
     try{
-        const connection  =  await mongoose.connect("")
+        const connection  =  await mongoose.connect(process.env.MONGODB_URL)
        
-            console.log("Mongoose is Connected")
-        
-            console.log("Unaable to Coonect DB")
+            console.log("Database is Connected ")
+    
         
     }catch(err){
         console.log("Error Has beeen occurred", err.message)

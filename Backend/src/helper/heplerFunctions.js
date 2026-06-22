@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken"
 export const OTP = () => {
-    return Math.floor(100000 + Math.random() * 900000)
+    
+    return   Math.floor(100000 + Math.random() * 900000)
 }
 export const generaeteAccesstokenAndRefrehToken = {
     generateaccesToken: async (email, isVerified, _id) => {
