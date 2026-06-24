@@ -2,7 +2,12 @@ import { useEffect } from "react";
 import { socket } from "../socket";
 import * as fabric from 'fabric';
 import { setupBrush } from "@/utils/setupBrush";
-export const usecanvs = (canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity) => {
+import API from "@/service/API.sevice";
+
+import { saveBoard } from "@/UI/Main/services/servies";
+export const usecanvs = (canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, id) => {
+    
+   
     useEffect(() => {
         if (!canvasRef.current) return;
         const width = canvasRef.current.parentElement?.clientWidth
@@ -19,8 +24,9 @@ export const usecanvs = (canvasRef, canvasfileref, background, current, undoStac
             setupBrush(canvas, current, color, size, Opacity, background);
         }
 
-        canvas.on("object:added", (options) => {
+        canvas.on("object:added",async (options) => {
             if (options.target.programmatic) return;
+                
             if (!options.target.id) {
                 options.target.id = Date.now().toString();
             }
@@ -28,15 +34,20 @@ export const usecanvs = (canvasRef, canvasfileref, background, current, undoStac
             undoStack.current.push(options.target);
             redoStack.current = [];
             socket.emit("canvas-data", options.target.toObject(["id"]));
+             saveBoard(canvas,id)
         });
 
-        canvas.on("object:modified", (options) => {
+        canvas.on("object:modified", async(options) => {
             if (options.target.programmatic) return;
+            
             socket.emit("canvas-data", options.target.toObject(["id"]));
+             saveBoard(canvas,id)
         });
 
         return () => {
             canvas.dispose();
         };
     }, []);
+    
+
 }

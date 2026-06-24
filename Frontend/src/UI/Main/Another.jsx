@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import { socket } from '../../socket.js';
 import ToolsBar from './ToolsBar.jsx';
@@ -10,11 +10,16 @@ import { useSocketCanvas } from '@/Hooks/whiteboardSocket.js';
 import { usecanvs } from '@/Hooks/useCanvas.js';
 import { useDrawingMode } from '@/Hooks/useDraw.js';
 import { useCanvasDrawing } from '@/Hooks/Shapes.js';
+import { useContext } from 'react';
+import { UserContext } from '@/Userprovider.jsx';
 import Navabar from './Navabar.jsx';
+import { useParams } from 'react-router-dom';
+import { getBoard } from './services/servies.js';
+import { saveBoard } from './services/servies.js';
 export const Another = () => {
   const canvasRef = useRef(null);
   const canvasfileref = useRef(null);
-  const fileInputRef = useRef(null);
+  const { fileInputRef } = useContext(UserContext)
   const [size, setSize] = useState(3);
   const [current, setcurrent] = useState("line");
   const [color, setcolor] = useState("black");
@@ -24,14 +29,12 @@ export const Another = () => {
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const [chatopen, setchatopen] = useState(false)
-
+  const [elements, setElements] = useState(null)
+  const { roomid } = useParams()
+  const [loading, setloading] = useState(false)
   useSocketCanvas(canvasfileref)
 
-  usecanvs(canvasRef, canvasfileref, background, current, undoStack, redoStack, color, Opacity)
 
-  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background });
-
-  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, });
 
   const addText = () => {
     const canvas = canvasfileref.current;
@@ -75,7 +78,7 @@ export const Another = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleUndo = () => {
+  const handleUndo = async() => {
     const canvas = canvasfileref.current;
     if (!canvas || undoStack.current.length === 0) return;
     const lastObj = undoStack.current.pop();
@@ -85,9 +88,10 @@ export const Another = () => {
     canvas.renderAll();
 
     socket.emit("undo-canvas", lastObj.toObject(['id']).id)
+    await saveBoard(canvasfileref.current,roomid)
   };
 
-  const handleRedo = () => {
+  const handleRedo = async() => {
     const canvas = canvasfileref.current;
     if (!canvas || redoStack.current.length === 0) return;
     const rawObj = redoStack.current.pop();
@@ -96,13 +100,60 @@ export const Another = () => {
     canvas.add(rawObj);
     canvas.renderAll();
     socket.emit("canvas-data", rawObj.toObject(['id']))
+    await saveBoard(canvasfileref.current,roomid)
   };
-  const clearCanavs = () => {
+  const clearCanavs = async() => {
     const canvas = canvasfileref.current
     if (!canvas) return
     canvas.clear()
     socket.emit("clear-canvas", [])
+    await saveBoard(canvasfileref.current,roomid)
   }
+
+  useEffect(() => {
+    const fetchBoard = async () => {
+      try {
+        setloading(true)
+        const data = await getBoard(roomid);
+        undoStack.current = data
+        setElements(data)
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setloading(false)
+      }
+    };
+
+    fetchBoard();
+  }, [roomid]);
+  useEffect(() => {
+    if (!canvasfileref.current || !elements) return;
+    
+    fabric.util.enlivenObjects(elements).then((objects) => {
+    
+      objects.forEach((obj) => {
+        
+        obj.programmatic = true;
+        canvasfileref.current.add(obj);
+      });
+
+      canvasfileref.current.renderAll();
+    });
+    
+  }, [elements]);
+
+  useEffect(() => {
+    socket.emit("join-room", roomid);
+  }, [roomid]);
+
+  usecanvs(canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, roomid)
+
+  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background });
+
+  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, });
+
+
   return (
     <>
       <Navabar

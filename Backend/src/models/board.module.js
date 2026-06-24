@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 const boardSchema = new mongoose.Schema({
     title: {
         type: String,
-        default: "Untitled Board"
+        default: "Untitled Board",
+        
     },
     boardId: {
         type: String,
@@ -19,12 +20,16 @@ const boardSchema = new mongoose.Schema({
         }
     ],
     elements: {
-        type: Array,
+        type: [mongoose.Schema.Types.Mixed],
         default: []
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    },
+    password:{
+        type:String,
+        required:true,
     }
 })
 

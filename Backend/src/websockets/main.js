@@ -1,25 +1,26 @@
 
 
 export const broradCast = (io, socket) => {
-    // socket.on("join-board", (boardId) => {
-    // //     socket.join(boardId)
-    // //     socket.boatrdId = boardId
-    // // })
+    socket.on("join-room", (boardId) => {
+        socket.join(boardId)
+      
+        socket.boardId = boardId
+    })
     socket.on("canvas-data", (data) => {
 
-        socket.broadcast.emit("canvas_recieve", data);
+        socket.to(socket.boardId).emit("canvas_recieve", data);
     });
     socket.on("current-address", (data) => {
-    
-        socket.broadcast.emit("canvas_pointer", data)
+
+        socket.to(socket.boardId).emit("canvas_pointer", data)
     })
-    socket.on("message-sent",(data)=>{
-         io.emit("message-recieve", data);
+    socket.on("message-sent", (data) => {
+        io.to(socket.boardId).emit("message-recieve", data);
     })
     socket.on("undo-canvas", (data) => {
-        socket.broadcast.emit("undo", data)
+        socket.to(socket.boardId).emit("undo", data)
     })
     socket.on("clear-canvas", (data) => {
-        socket.broadcast.emit("clear", data)
+        socket.to(socket.boardId).emit("clear", data)
     })
 }

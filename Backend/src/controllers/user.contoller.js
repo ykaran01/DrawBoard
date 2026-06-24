@@ -81,10 +81,10 @@ export const verifyUser = asyncHandler(async (req, res) => {
 
 export const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    
+
     const user = await User.findOne({ email: email })
-    
-    console.log(user)
+
+
     if (!user) {
         throw new ApiResponse(404, "User do not Found");
     }
@@ -92,8 +92,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     const userpassword = await user.password
 
     const isPasswordCorrect = await bcrypt.compare(password, userpassword)
-    
-    console.log(isPasswordCorrect)
+
+
     if (!isPasswordCorrect) {
         throw new ApiError(400, "Login Unsuccesfull")
     }
@@ -142,40 +142,40 @@ export const addOrUpdateAvatar = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, user, "Avatar Changed Coorectly"))
 })
 
-export const  getUser = asyncHandler(async(req,res)=>{
+export const getUser = asyncHandler(async (req, res) => {
 
-    const {email,_id} = req.user
-    
-    const user = await User.findOne({_id:_id}).select("-verifyOTP -expireOTP -password -_id -refreshToken")
-    if(!user){
-        throw new ApiError(401,"User Not Found")
+    const { email, _id } = req.user
+
+    const user = await User.findOne({ _id: _id }).select("-verifyOTP -expireOTP -password -_id -refreshToken")
+    if (!user) {
+        throw new ApiError(401, "User Not Found")
     }
 
-    res.status(200).json(new ApiResponse(200,user,"User feyched Successfully"))
+    res.status(200).json(new ApiResponse(200, user, "User feyched Successfully"))
 })
 
-export const refresh = asyncHandler(async(req,res)=>{
+export const refresh = asyncHandler(async (req, res) => {
     const token = req.cookies?.refreshToken
-   
-    if(!token){
-        throw new ApiError(404,"token Not Found")
+
+    if (!token) {
+        throw new ApiError(404, "token Not Found")
     }
-    const {_id}  = jwt.verify(token,process.env.REFRESH_TOKEN_SECRET)
-    if(!_id){
-        throw new ApiError(402,"Unauthorized")
+    const { _id } = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET)
+    if (!_id) {
+        throw new ApiError(402, "Unauthorized")
     }
 
-    const user = await User.findOne({_id:_id})
-    if(!user){
-         throw new ApiError(402,"Unauthorized")
+    const user = await User.findOne({ _id: _id })
+    if (!user) {
+        throw new ApiError(402, "Unauthorized")
     }
-    
-    const accessToken  = await generaeteAccesstokenAndRefrehToken.generateaccesToken(user.email,user.isVerified,user._id)
-    
+
+    const accessToken = await generaeteAccesstokenAndRefrehToken.generateaccesToken(user.email, user.isVerified, user._id)
+
     const cookieOptions = {
         httpOnly: true,
         sameSite: "strict"
     };
-    res.status(200).cookie("accessToken",accessToken).json(new ApiResponse(200,null,"token generated sucessfully"))
+    res.status(200).cookie("accessToken", accessToken).json(new ApiResponse(200, null, "token generated sucessfully"))
 
 })
