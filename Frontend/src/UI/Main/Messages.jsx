@@ -4,9 +4,9 @@ import { Send } from 'lucide-react';
 import { socket } from '@/socket';
 import { useState } from 'react';
 
-const Messages = ({ chatopen }) => {
+const Messages = ({ chatopen ,setchatopen}) => {
     const username = socket.id
-    const [message, setmessage] = useState(null)
+    const [message, setmessage] = useState("")
     const [allmessages, setallmessages] = useState([])
     const handleSubmit = (e) => {
         const time = new Date(Date.now())
@@ -44,15 +44,20 @@ const Messages = ({ chatopen }) => {
             <div className="flex w-full flex-col gap-4 p-4 backdrop-blur-md bg-white/70 border-l border-purple-200 shadow-2xl">
 
 
-                <div className="w-full">
+                <div className="w-full z-80">
                     <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-purple-600 to-violet-500 px-4 py-3 shadow-lg">
                         <h1 className="text-xl font-bold tracking-wide text-white">
                             ChatRoom
                         </h1>
 
                         <div className="flex items-center gap-2">
-                            <div className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse"></div>
-                            <span className="text-xs text-white">Online</span>
+                           
+                            <button  
+                             onClick={(e)=>{
+                                e.preventDefault()
+                                setchatopen(false)
+                            }}
+                            className=" rounded-full w-8 h-8  flex justify-center items-center cursor-pointer bg-white text-purple-600">X</button>
                         </div>
                     </div>
                 </div>
@@ -94,7 +99,7 @@ const Messages = ({ chatopen }) => {
 
                 <div className="flex items-center gap-2 rounded-2xl border border-purple-200 bg-white p-2 shadow-md">
                     <input
-                        type="text"
+                        type="text`"
                         value={message}
                         onChange={(e) => {
                             e.preventDefault()

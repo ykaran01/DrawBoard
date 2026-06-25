@@ -175,14 +175,40 @@ export const useCanvasDrawing = ({
       activeShape.current = null;
     };
 
+    const Zoomproblem = (options) => {
+      if (options.e) {
+        options.e.preventDefault();
+        options.e.stopPropagation();
+      }
+      const deltay = options.e.deltaY
+
+      let zoom = canvas.getZoom()
+      let zoomfactor = 0.999      
+      if (options.e.ctrlKey) {
+
+        zoomfactor = 0.95;
+      }
+      zoom *= zoomfactor ** deltay
+      if (zoom < 0.06) zoom = 0.06
+      if (zoom > 20) zoom = 20
+
+      canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom)
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+    }
+
     canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:move", handleMouseMove);
     canvas.on("mouse:up", handleMouseUp);
+    canvas.on("mouse:wheel", Zoomproblem)
+
+
 
     return () => {
       canvas.off("mouse:down", handleMouseDown);
       canvas.off("mouse:move", handleMouseMove);
       canvas.off("mouse:up", handleMouseUp);
+      canvas.off("mouse:wheel", Zoomproblem)
     };
   }, [currentMode, color, size, canvasRef, setCurrentMode, socket]);
 };

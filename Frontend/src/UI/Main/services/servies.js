@@ -27,5 +27,5 @@ export const saveBoard = (canvas, id) => {
         } catch (err) {
             console.error(err);
         }
-    }, 2000);
+    }, 1500);
 }

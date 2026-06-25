@@ -12,6 +12,7 @@ export  const UserProvider = ({ children }) => {
     API.get('/user/me')
       .then((response) => {
         setUserData(response.data.data);
+        
       })
       .catch((err) => {
           console.log(err.message)
