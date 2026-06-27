@@ -46,33 +46,3 @@ export const handleImageUpload = (e, { canvas, setCurrentMode }) => {
   reader.readAsDataURL(file);
 };
 
-export const handleUndo = ({ canvas, undoStack, redoStack, socket }) => {
-  if (!canvas || !undoStack?.current || undoStack.current.length === 0) return;
-
-  const lastObj = undoStack.current.pop();
-  redoStack.current.push(lastObj);
-  lastObj.programmatic = true;
-  canvas.remove(lastObj);
-  canvas.renderAll();
-
-  socket.emit("undo-canvas", lastObj.toObject(["id"]).id);
-};
-
-export const handleRedo = ({ canvas, undoStack, redoStack, socket }) => {
-  if (!canvas || !redoStack?.current || redoStack.current.length === 0) return;
-
-  const rawObj = redoStack.current.pop();
-  undoStack.current.push(rawObj);
-  rawObj.programmatic = true;
-  canvas.add(rawObj);
-  canvas.renderAll();
-
-  socket.emit("canvas-data", rawObj.toObject(["id"]));
-};
-
-
-export const clearCanvas = ({ canvas, socket }) => {
-  if (!canvas) return;
-  canvas.clear();
-  socket.emit("clear-canvas", []);
-};

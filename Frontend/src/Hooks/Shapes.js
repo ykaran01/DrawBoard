@@ -19,6 +19,7 @@ export const useCanvasDrawing = ({
     if (!canvas) return;
 
     const handleMouseDown = (options) => {
+
       const validModes = ["rectangle", "circle", "triangle", "segment", "arrow"];
       if (!validModes.includes(currentMode)) return;
 
@@ -93,7 +94,7 @@ export const useCanvasDrawing = ({
 
     const handleMouseMove = (options) => {
       if (!isDrawingShape.current) return;
-
+      if (options.e.target.closest('[data-radix-dialog-content]')) return;
       const pointerPos = canvas.getScenePoint(options.e);
       const startX = startPointer.current.x;
       const startY = startPointer.current.y;
@@ -151,6 +152,7 @@ export const useCanvasDrawing = ({
 
     const handleMouseUp = () => {
       if (!isDrawingShape.current) return;
+
       isDrawingShape.current = false;
       if (activeShape.current) {
         activeShape.current.set({ selectable: true });
@@ -183,7 +185,7 @@ export const useCanvasDrawing = ({
       const deltay = options.e.deltaY
 
       let zoom = canvas.getZoom()
-      let zoomfactor = 0.999      
+      let zoomfactor = 0.999
       if (options.e.ctrlKey) {
 
         zoomfactor = 0.95;
@@ -193,8 +195,8 @@ export const useCanvasDrawing = ({
       if (zoom > 20) zoom = 20
 
       canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom)
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
+      options.e.preventDefault();
+      options.e.stopPropagation();
     }
 
     canvas.on("mouse:down", handleMouseDown);

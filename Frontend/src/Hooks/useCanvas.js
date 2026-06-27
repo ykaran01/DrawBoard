@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { socket } from "../socket";
 import * as fabric from 'fabric';
 import { setupBrush } from "@/utils/setupBrush";
-import API from "@/service/API.sevice";
+
 
 import { saveBoard } from "@/UI/Main/services/servies";
 export const usecanvs = (canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, id) => {
@@ -34,14 +34,13 @@ export const usecanvs = (canvasRef, canvasfileref, background, current, undoStac
             undoStack.current.push(options.target);
             redoStack.current = [];
             socket.emit("canvas-data", options.target.toObject(["id"]));
-             saveBoard(canvas,id)
+            await  saveBoard(canvas,id)
         });
 
         canvas.on("object:modified", async(options) => {
             if (options.target.programmatic) return;
-            
             socket.emit("canvas-data", options.target.toObject(["id"]));
-             saveBoard(canvas,id)
+             await saveBoard(canvas,id)
         });
 
         return () => {

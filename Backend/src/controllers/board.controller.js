@@ -29,7 +29,7 @@ export const createBoard = asyncHandler(async (req, res) => {
     delete boardObject.password
 
     return res.status(201).json(
-        new ApiResponse(201, boardObject, "Board created successfully")
+        new ApiResponse(201, null, "Board created successfully")
     );
 });
 
@@ -48,11 +48,12 @@ export const getBoard = asyncHandler(async (req, res) => {
 });
 
 export const getMyBoards = asyncHandler(async (req, res) => {
+    
     const boards = await Board.find({
-        owner: req.user
-    });
-
-    return res.status(200).json(
+        owner: req.user._id
+    }).select('-password -elements ');
+  
+     res.status(200).json(
         new ApiResponse(200, boards, "Boards fetched successfully")
     );
 });
@@ -81,9 +82,9 @@ export const updateBoard = asyncHandler(async (req, res) => {
 
 
 export const deleteBoard = asyncHandler(async (req, res) => {
-    const { boardId } = req.params;
+    const { Id } = req.params;
 
-    const board = await Board.findOne({ boardId });
+    const board = await Board.findById( Id );
 
     if (!board) {
         throw new ApiError(404, "Board not found");
@@ -93,7 +94,7 @@ export const deleteBoard = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Unauthorized");
     }
 
-    await Board.deleteOne({ _id: board._id });
+    await Board.deleteOne({ _id: Id });
 
     return res.status(200).json(
         new ApiResponse(200, {}, "Board deleted successfully")
@@ -120,7 +121,7 @@ export const addElement = asyncHandler(async (req, res) => {
 export const joinBoard = asyncHandler(async (req, res) => {
     const { boardId, password } = req.body;
     const userId = req.user._id;
-
+  
     if (!boardId || !password) {
         throw new ApiError(400, "Board ID and password are required");
     }

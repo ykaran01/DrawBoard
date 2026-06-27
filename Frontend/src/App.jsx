@@ -23,8 +23,8 @@ const App = () => {
                 <Route path='/signUp' element={<SignUp />} />
                 <Route element={<ProtectedLayout />} >
                     <Route path='/signIn' element={<SignIn />} />
-                    <Route path="/room/:roomid" element={<Another />} />
-                    <Route path="/dash" element={<Home />} />
+                    <Route path="/room/:roomid" element={<Another/>} />
+                    <Route path="/dash" element={<Home/>} />
 
                 </Route>
                 <Route path='/*' element={<div className='bg-black font-extrabold w-screen h-screen flex justify-center items-center text-5xl text-white '>

@@ -31,7 +31,9 @@ export const loginUser = async(info)=>{
     try{
        
         const {data} = await  API.post('/user/login',info)
-        console.log(data)
+        if(data.statsCode==200 || data.data.statsCode==200 || data.success){
+            return true
+        }
     
     }catch(err){
         console.log(err)

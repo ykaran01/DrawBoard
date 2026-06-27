@@ -20,7 +20,7 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas ,canvasfileref}) =>
   ];
 
   return (
-    <nav className="w-full h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between select-none shadow-sm relative z-20">
+    <nav className="w-full h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between  shadow-sm relative ">
       
 
       <div className="flex items-center gap-4">

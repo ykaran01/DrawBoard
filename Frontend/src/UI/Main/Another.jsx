@@ -32,7 +32,7 @@ export const Another = () => {
   const [elements, setElements] = useState(null)
   const { roomid } = useParams()
   const [loading, setloading] = useState(false)
-  const [userspointer ,setuserpointer] = useState([])
+  const [userspointer, setuserpointer] = useState([])
 
   useSocketCanvas(canvasfileref)
 
@@ -80,30 +80,30 @@ export const Another = () => {
     reader.readAsDataURL(file);
   };
 
-const handleUndo = async () => {
-  const canvas = canvasfileref.current;
-  if (!canvas || undoStack.current.length === 0) return;
-  const lastObj = undoStack.current.pop();
-  const targetId = lastObj.id || (lastObj.toObject && lastObj.toObject(['id']).id);
-  
-  if (!targetId) {
-    console.error("Cannot undo: object is missing an ID", lastObj);
-    return;
-  }
+  const handleUndo = async () => {
+    const canvas = canvasfileref.current;
+    if (!canvas || undoStack.current.length === 0) return;
+    const lastObj = undoStack.current.pop();
+    const targetId = lastObj.id || (lastObj.toObject && lastObj.toObject(['id']).id);
 
-  const liveCanvasObject = canvas.getObjects().find(obj => obj.id === targetId);
+    if (!targetId) {
+      console.error("Cannot undo: object is missing an ID", lastObj);
+      return;
+    }
 
-  if (liveCanvasObject) {
-    redoStack.current.push(liveCanvasObject);
-    liveCanvasObject.programmatic = true;
-    canvas.remove(liveCanvasObject);
-    canvas.renderAll();
-  } else {
-    redoStack.current.push(lastObj);
-  }
-  socket.emit("undo-canvas", targetId);
-  await saveBoard(canvas, roomid)
-};
+    const liveCanvasObject = canvas.getObjects().find(obj => obj.id === targetId);
+
+    if (liveCanvasObject) {
+      redoStack.current.push(liveCanvasObject);
+      liveCanvasObject.programmatic = true;
+      canvas.remove(liveCanvasObject);
+      canvas.renderAll();
+    } else {
+      redoStack.current.push(lastObj);
+    }
+    socket.emit("undo-canvas", targetId);
+    await saveBoard(canvas, roomid)
+  };
 
   const handleRedo = async () => {
     const canvas = canvasfileref.current;
@@ -114,7 +114,7 @@ const handleUndo = async () => {
     canvas.add(rawObj);
     canvas.renderAll();
     socket.emit("canvas-data", rawObj.toObject(['id']))
-    await  saveBoard(canvasfileref.current, roomid)
+    await saveBoard(canvasfileref.current, roomid)
   };
   const clearCanavs = async () => {
     const canvas = canvasfileref.current
@@ -129,9 +129,9 @@ const handleUndo = async () => {
       try {
 
         const data = await getBoard(roomid);
-        
+
         setElements(data)
-        
+
         undoStack.current = data
 
       } catch (err) {
@@ -164,32 +164,11 @@ const handleUndo = async () => {
   }, [roomid]);
 
 
-  useEffect(()=>{
-      const handlekeys = (e)=>{
-        e.preventDefault()
-        const isModifiled = e.ctrlKey || e.metaKey
 
-        if(isModifiled){
-          if(e.key.toLowerCase()=='z'){
-            handleUndo()
-          }
-          else if(e.key.toLowerCase()=='y'){
-            handleRedo()
-          }
-        }
-      }
-      window.addEventListener('keydown',handlekeys)
-
-      return ()=>{
-        window.removeEventListener('keydown',handlekeys)
-      }
-
-
-  },[handleRedo,handleUndo])
 
   usecanvs(canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, roomid)
 
-  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background });
+  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background ,chatopen});
 
   useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, });
   if (loading) {
@@ -211,13 +190,14 @@ const handleUndo = async () => {
 
   return (
     <>
+    <Messages chatopen={chatopen} setchatopen={setchatopen} />
       <Navabar
         handleUndo={handleUndo}
         handleRedo={handleRedo}
         clearCanvas={clearCanavs}
         canvasfileref={canvasfileref}
       />
-      <div className="min-h-[85vh]  overflow-hidden relative bg-purple-100 p-4">
+      <div className="min-h-[85vh]  relative bg-purple-100 p-4">
 
         <div className="flex gap-4 h-[90vh]">
           <ToolsBar
@@ -231,10 +211,15 @@ const handleUndo = async () => {
 
           />
 
-          <div className='w-full h-[85vh] shadow bg-white shadow-black '>
-            <canvas ref={canvasRef} ></canvas>
+          <div 
+           style={{ pointerEvents: chatopen ? 'none' : 'auto' }}
+          className="relative w-full h-[85vh] bg-white shadow shadow-black overflow-hidden">
+            <canvas
+              ref={canvasRef}
+              className="absolute inset-0"
+            />
           </div>
-          
+
 
           <Settings
             size={size}
@@ -250,7 +235,7 @@ const handleUndo = async () => {
             setbackground={setbackground}
           />
         </div>
-        <Messages chatopen={chatopen} setchatopen={setchatopen} ></Messages>
+
         <div onClick={() => {
           setchatopen(true)
         }} className='absolute top-9 right-25 cursor-pointer  border border-purple-400 rounded-full bg-white w-10 h-10 flex justify-center items-center' >
@@ -262,7 +247,9 @@ const handleUndo = async () => {
           <Menu size={24} color='#dcb7e1' />
 
         </div>
+
       </div>
+      
     </>
   );
 };

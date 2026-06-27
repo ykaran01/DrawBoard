@@ -4,12 +4,12 @@ import { addElement, createBoard, deleteBoard, getBoard, getMyBoards, joinBoard,
 
 const boardrouter = Router()
 
-// boardrouter.use(userMiddleware)
+boardrouter.use(userMiddleware)
 boardrouter.post('/create', createBoard)
 boardrouter.get('/get/:Id', getBoard)
-boardrouter.get('/myboard', getMyBoards)
+boardrouter.get('/myboards', getMyBoards)
 boardrouter.patch('/update/:Id', updateBoard)
-boardrouter.delete('/delete', deleteBoard)
+boardrouter.delete('/delete/:Id', deleteBoard)
 boardrouter.put('/add/:id', addElement)
 boardrouter.post('/join', joinBoard)
 export { boardrouter }
