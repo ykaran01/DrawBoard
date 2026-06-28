@@ -3,11 +3,14 @@ import API from "@/service/API.sevice"
 export const getBoard = async (id) => {
     try {
         const { data } = await API.get(`/board/get/${id}`)
-        return data.data.elements
+        
+        return {elements:data.data.elements,name:data.data.title}
     } catch (err) {
         console.log(err.message)
     }
 }
+
+
 let saveTimer = null;
 export const saveBoard = (canvas, id) => {
     const objects = canvas.getObjects().map(obj =>
@@ -28,4 +31,14 @@ export const saveBoard = (canvas, id) => {
             console.error(err);
         }
     }, 1500);
+}
+
+export const getMessages = async(roomId)=>{
+    try{
+        const {data} = await API.get(`/message/${roomId}`)
+        return data.data
+        
+    }catch(err){
+        console.log(err.message)
+    }
 }

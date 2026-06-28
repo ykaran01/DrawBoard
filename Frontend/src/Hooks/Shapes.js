@@ -94,7 +94,7 @@ export const useCanvasDrawing = ({
 
     const handleMouseMove = (options) => {
       if (!isDrawingShape.current) return;
-      if (options.e.target.closest('[data-radix-dialog-content]')) return;
+      
       const pointerPos = canvas.getScenePoint(options.e);
       const startX = startPointer.current.x;
       const startY = startPointer.current.y;

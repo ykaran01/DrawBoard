@@ -7,17 +7,20 @@ const messageSchema = new mongoose.Schema({
         recquired: true,
         index: true,
     },
-    sender:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
+    sender: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
-    text:{
-        type:String,
+    message: {
+        type: String,
         recquired: true,
 
     }
 
-
 }, { timestamps: true })
 
-export  const  Message = mongoose.model('Messages',messageSchema)
+
+messageSchema.index({ createdAt: 1 },
+    { expireAfterSeconds: 10 * 60 })
+
+export const Message = mongoose.model('Messages', messageSchema)

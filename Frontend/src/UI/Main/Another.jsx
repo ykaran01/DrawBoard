@@ -16,7 +16,9 @@ import Navabar from './Navabar.jsx';
 import { useParams } from 'react-router-dom';
 import { getBoard } from './services/servies.js';
 import { saveBoard } from './services/servies.js';
+
 export const Another = () => {
+
   const canvasRef = useRef(null);
   const canvasfileref = useRef(null);
   const { fileInputRef } = useContext(UserContext)
@@ -33,6 +35,7 @@ export const Another = () => {
   const { roomid } = useParams()
   const [loading, setloading] = useState(false)
   const [userspointer, setuserpointer] = useState([])
+  const [title, setitle] = useState('')
 
   useSocketCanvas(canvasfileref)
 
@@ -128,11 +131,12 @@ export const Another = () => {
     const fetchBoard = async () => {
       try {
 
-        const data = await getBoard(roomid);
+        const { elements, name } = await getBoard(roomid);
+        setitle(name || 'Untitled')
 
-        setElements(data)
+        setElements(elements || {})
 
-        undoStack.current = data
+        undoStack.current = elements
 
       } catch (err) {
         console.error(err);
@@ -168,7 +172,7 @@ export const Another = () => {
 
   usecanvs(canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, roomid)
 
-  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background ,chatopen});
+  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background, chatopen });
 
   useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, });
   if (loading) {
@@ -190,12 +194,14 @@ export const Another = () => {
 
   return (
     <>
-    <Messages chatopen={chatopen} setchatopen={setchatopen} />
+      <Messages chatopen={chatopen} setchatopen={setchatopen} roomid={roomid}  />
       <Navabar
         handleUndo={handleUndo}
         handleRedo={handleRedo}
         clearCanvas={clearCanavs}
         canvasfileref={canvasfileref}
+        title={title}
+        setitle={setitle}
       />
       <div className="min-h-[85vh]  relative bg-purple-100 p-4">
 
@@ -211,9 +217,9 @@ export const Another = () => {
 
           />
 
-          <div 
-           style={{ pointerEvents: chatopen ? 'none' : 'auto' }}
-          className="relative w-full h-[85vh] bg-white shadow shadow-black overflow-hidden">
+          <div
+            style={{ pointerEvents: chatopen ? 'none' : 'auto' }}
+            className="relative w-full h-[85vh] bg-white shadow shadow-black overflow-hidden">
             <canvas
               ref={canvasRef}
               className="absolute inset-0"
@@ -249,7 +255,7 @@ export const Another = () => {
         </div>
 
       </div>
-      
+
     </>
   );
 };

@@ -12,7 +12,7 @@ export const createRoom = async (boardId, password, title) => {
 
 export const joinRoom = async (boardId, password) => {
     try {
-        
+
         const { data } = await API.post("/board/join", {
             boardId,
             password,
@@ -25,22 +25,31 @@ export const joinRoom = async (boardId, password) => {
     }
 };
 
-export const getUserBoard = async()=>{
-    try{
-       
-        const {data} = await API.get('/board/myboards')
-        return data.data 
-    }catch(err){
+export const getUserBoard = async () => {
+    try {
+
+        const { data } = await API.get('/board/myboards')
+        return data.data
+    } catch (err) {
         console.log(err.message)
     }
 }
 
-export const deleteboard = async(boardId)=>{
-    try{
-        const {deta} = await API.delete(`board/delete/${boardId}`)
+export const deleteboard = async (boardId) => {
+    try {
+        const { deta } = await API.delete(`board/delete/${boardId}`)
         console.log(data)
-        
-    }catch(err){
+
+    } catch (err) {
+        console.log(err.message)
+    }
+}
+
+export const changeImage = async (boardId, formdata) => {
+    try {
+        const { data } = await API.patch(`/board/changeImage/${boardId}`, formdata)
+        console.log(data)
+    } catch (err) {
         console.log(err.message)
     }
 }

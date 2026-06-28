@@ -3,6 +3,7 @@ import { Board } from "../models/board.module.js";
 import { ApiError } from "../Util/apiError.js";
 import { ApiResponse } from "../Util/apiResponse.js";
 import bcrypt from "bcryptjs";
+import { uploadOnCloudnary } from "../Util/cloudnary.js";
 
 export const createBoard = asyncHandler(async (req, res) => {
 
@@ -35,9 +36,9 @@ export const createBoard = asyncHandler(async (req, res) => {
 
 export const getBoard = asyncHandler(async (req, res) => {
     const { Id } = req.params;
-
+   
     const board = await Board.findOne({ boardId: Id }).select('-password -boardId ').populate('users', 'username email');
-
+    
     if (!board) {
         throw new ApiError(404, "Board not found");
     }
@@ -156,3 +157,24 @@ export const joinBoard = asyncHandler(async (req, res) => {
         )
     );
 });
+
+export const changeImage = asyncHandler(async(req,res)=>{
+    const {roomId} = req.params
+   
+    const image = req.file;
+   
+    if(!image){
+      throw new  ApiError(404,'Image does not file')
+    }
+    const uploadedImage = await uploadOnCloudnary(image.path)
+    
+    const board = await Board.findById(roomId)
+    if(!board){
+        throw new ApiError(401,"Board Not found") 
+    }
+    board.image = uploadedImage.url
+    await board.save()
+
+    res.status(200).json(new ApiResponse(200,null,"Image Succesguuly Uploaded"))
+
+})

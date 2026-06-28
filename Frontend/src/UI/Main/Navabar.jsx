@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { 
-  Undo2, 
-  Redo2, 
-  Trash2, 
-  Download, 
-  Share2, 
-  Check, 
-  Edit2 
+import {
+  Undo2,
+  Redo2,
+  Trash2,
+  Download,
+  Share2,
+  Check,
+  Edit2
 } from 'lucide-react';
 import { downloaddata } from '@/Hooks/exportData';
-export const Navbar = ({ handleUndo, handleRedo, clearCanvas ,canvasfileref}) => {
-  const [boardName, setBoardName] = useState("Untitled Architecture Flow");
+export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, title, setitle }) => {
+
   const [isEditingName, setIsEditingName] = useState(false);
 
 
@@ -21,7 +21,7 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas ,canvasfileref}) =>
 
   return (
     <nav className="w-full h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between  shadow-sm relative ">
-      
+
 
       <div className="flex items-center gap-4">
         <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center font-bold text-sm text-white">
@@ -32,8 +32,8 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas ,canvasfileref}) =>
           <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2 py-1">
             <input
               type="text"
-              value={boardName}
-              onChange={(e) => setBoardName(e.target.value)}
+              value={title}
+              onChange={(e) => setitle(e.target.value)}
               onBlur={() => setIsEditingName(false)}
               onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
               autoFocus
@@ -41,11 +41,11 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas ,canvasfileref}) =>
             />
           </div>
         ) : (
-          <div 
+          <div
             onClick={() => setIsEditingName(true)}
             className="flex items-center gap-2 cursor-pointer group px-1 py-0.5 rounded hover:bg-slate-50 transition"
           >
-            <span className="text-sm font-semibold text-slate-800">{boardName}</span>
+            <span className="text-sm font-semibold text-slate-800">{title}</span>
             <Edit2 size={12} className="text-slate-400 opacity-0 group-hover:opacity-100 transition" />
           </div>
         )}
@@ -55,25 +55,25 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas ,canvasfileref}) =>
         </div>
       </div>
       <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-1 flex items-center gap-0.5 shadow-inner">
-        <button 
+        <button
           onClick={handleUndo}
           className="p-2 text-slate-600 hover:bg-white hover:text-purple-600 rounded-lg transition active:scale-95"
           title="Undo"
         >
           <Undo2 size={15} />
         </button>
-        <button 
+        <button
           onClick={handleRedo}
           className="p-2 text-slate-600 hover:bg-white hover:text-purple-600 rounded-lg transition active:scale-95"
           title="Redo"
         >
           <Redo2 size={15} />
         </button>
-        
-    
+
+
         <div className="w-[1px] h-4 bg-slate-200 mx-1"></div>
 
-        <button 
+        <button
           onClick={clearCanvas}
           className="p-2 text-slate-400 hover:bg-white hover:text-rose-600 rounded-lg transition active:scale-95"
           title="Clear Canvas"
@@ -96,15 +96,15 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas ,canvasfileref}) =>
           ))}
         </div>
 
- 
+
         <div className="flex items-center gap-4">
-    
+
           <button
-        onClick={(e)=>{
-            e.preventDefault()
-            downloaddata(canvasfileref.current)
-        }}
-          className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium text-xs px-3 py-2 rounded-xl transition active:scale-95">
+            onClick={(e) => {
+              e.preventDefault()
+              downloaddata(canvasfileref.current)
+            }}
+            className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium text-xs px-3 py-2 rounded-xl transition active:scale-95">
             <Download size={13} />
             <span>Download</span>
           </button>

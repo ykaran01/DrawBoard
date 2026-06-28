@@ -146,12 +146,12 @@ export const getUser = asyncHandler(async (req, res) => {
 
     const { email, _id } = req.user
 
-    const user = await User.findOne({ _id: _id }).select("-verifyOTP -expireOTP -password -_id -refreshToken")
+    const user = await User.findOne({ _id: _id }).select("-verifyOTP -expireOTP -password  -refreshToken")
     if (!user) {
         throw new ApiError(401, "User Not Found")
     }
 
-    res.status(200).json(new ApiResponse(200, user, "User feyched Successfully"))
+    res.status(200).json(new ApiResponse(200, user, "User fetched Successfully"))
 })
 
 export const refresh = asyncHandler(async (req, res) => {

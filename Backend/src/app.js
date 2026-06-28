@@ -13,7 +13,10 @@ app.use(express.static("Public"))
 
 import { user } from './router/user.router.js'
 import { boardrouter } from './router/board.router.js'
+import { messageRouter } from './router/messages.route.js'
+
 app.use('/api/user',user)
 app.use('/api/board',boardrouter)
+app.use('/api/message',messageRouter)
 
 export {app}
