@@ -14,7 +14,6 @@ export const getBoard = async (id) => {
     }
 }
 
-
 let saveTimer = null;
 export const saveBoard = (canvas, id) => {
     const objects = canvas.getObjects().map(obj =>
@@ -40,6 +39,16 @@ export const saveBoard = (canvas, id) => {
 export const getMessages = async(roomId)=>{
     try{
         const {data} = await API.get(`/message/${roomId}`)
+        return data.data
+        
+    }catch(err){
+      throw new Error(err.response?.data?.message || "Something went wrong");
+    }
+}
+
+export const authoriseUser = async(roomId)=>{
+    try{
+        const {data} = await API.post(`/board/authorise/${roomId}`)
         return data.data
         
     }catch(err){

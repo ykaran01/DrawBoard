@@ -178,3 +178,20 @@ export const changeImage = asyncHandler(async(req,res)=>{
     res.status(200).json(new ApiResponse(200,null,"Image Succesguuly Uploaded"))
 
 })
+
+export const authoriseUser = asyncHandler(async(req,res)=>{
+    const {roomId} = req.params
+    const {_id} = req.user
+    
+    const board = await Board.findOne({boardId:roomId})
+    if(!board){
+        throw new ApiError(401,"Board Not found") 
+    }
+    if(!board.users.includes(_id)  && board.owner.toString() !== _id.toString()){
+        throw new ApiError(401,"User Not Authorised")
+    }
+    
+    res.status(200).json(new ApiResponse(200,null,"User Authorised"))
+
+
+})

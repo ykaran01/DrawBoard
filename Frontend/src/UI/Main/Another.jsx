@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import { socket } from '../../socket.js';
 import ToolsBar from './ToolsBar.jsx';
@@ -17,6 +17,7 @@ import { useParams } from 'react-router-dom';
 import { getBoard } from './services/servies.js';
 import { saveBoard } from './services/servies.js';
 import { useNavigate } from 'react-router-dom';
+import { authoriseUser } from './services/servies.js';
 export const Another = () => {
 
   const canvasRef = useRef(null);
@@ -38,20 +39,36 @@ export const Another = () => {
   const [loading, setloading] = useState(false)
   const [userspointer, setuserpointer] = useState({})
   const [title, setitle] = useState('')
+ 
 
+
+  const ispanning = useRef(false)
   const naviagte = useNavigate()
 
   useSocketCanvas(canvasfileref, setuserpointer)
-useEffect(() => {
+  useEffect(() => {
+    const userauthorised = async () => {
+      try {
+        await authoriseUser(roomid, user?._id)
+        
+      } catch (err) {
+        alert(err.message)
+        naviagte('/dash')
+      }
+    }
+    userauthorised()
+  },[user?._id,roomid])
+
+  useEffect(() => {
     if (!user || !roomid) return;
     socket.emit("join-room", {
-        roomId: roomid,
-        user,
+      roomId: roomid,
+      user,
     });
-    return ()=>{
+    return () => {
       socket.emit("room_leave")
     }
-}, [roomid, user?._id]);
+  }, [roomid, user?._id]);
 
 
   const addText = () => {
@@ -118,7 +135,9 @@ useEffect(() => {
       redoStack.current.push(lastObj);
     }
     socket.emit("undo-canvas", targetId);
+    
     await saveBoard(canvas, roomid)
+    
   };
 
   const handleRedo = async () => {
@@ -130,14 +149,20 @@ useEffect(() => {
     canvas.add(rawObj);
     canvas.renderAll();
     socket.emit("canvas-data", rawObj.toObject(['id']))
+    
     await saveBoard(canvasfileref.current, roomid)
+     
+   
   };
   const clearCanavs = async () => {
     const canvas = canvasfileref.current
     if (!canvas) return
     canvas.clear()
     socket.emit("clear-canvas", [])
+   
     await saveBoard(canvasfileref.current, roomid)
+   
+    
   }
 
   useEffect(() => {
@@ -145,9 +170,7 @@ useEffect(() => {
       try {
 
         const { elements, name } = await getBoard(roomid);
-        if (elements == null && name == null) {
-          naviagte('/dash')
-        }
+        
         setitle(name || 'Untitled')
 
         setElements(elements || {})
@@ -155,7 +178,7 @@ useEffect(() => {
         undoStack.current = elements
 
       } catch (err) {
-
+         naviagte('/dash')
         alert(err.message)
       }
     };
@@ -184,17 +207,43 @@ useEffect(() => {
 
 
 
+  useEffect(() => {
+
+    const handleup = (options) => {
+     
+      options.preventDefault()
+      if(options.code=="Delete" || options.code=="Backspace") clearCanavs()
+      else if(options.code=="KeyZ") handleUndo()
+      else if(options.code=="KeyY") handleRedo()
+      else if (options.code === "Space") ispanning.current = true;
+      else return
+      
+    }
+    const handledown = (options) => {
+      options.preventDefault()
+      if (options.code !== "Space") return
+      ispanning.current = false
+    }
+
+    window.addEventListener("keydown", handleup)
+    window.addEventListener("keyup", handledown)
+
+    return () => {
+      window.removeEventListener("keyup", handleup)
+      window.removeEventListener("keydown", handledown)
+     
+    }
 
 
+  }, [])
 
-
- 
   usecanvs(canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, roomid)
 
-  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background, chatopen
- });
+  useDrawingMode({
+    canvasRef: canvasfileref, current, color, size, opacity: Opacity, background, chatopen});
 
-  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, username: user?.username });
+  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, username: user?.username ,ispanning});
+
   if (loading) {
     return (
       <>
@@ -222,6 +271,7 @@ useEffect(() => {
         canvasfileref={canvasfileref}
         title={title}
         setitle={setitle}
+        
       />
       <div className="min-h-[85vh]  relative bg-purple-100 p-4">
 
@@ -239,7 +289,7 @@ useEffect(() => {
 
           <div
             style={{ pointerEvents: chatopen ? 'none' : 'auto' }}
-            className="relative w-full h-[85vh] bg-white shadow shadow-black overflow-hidden">
+            className="relative w-full h-[85vh] bg-white shadow shadow-purple-400 rounded-2xl overflow-hidden">
             <canvas
               ref={canvasRef}
               className="absolute inset-0"
@@ -262,7 +312,8 @@ useEffect(() => {
                     className="absolute pointer-events-none"
                   >
 
-                    <div className="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-lg" />
+                    <img src={user?.avatar} className="w-4 h-4 bg-blue-500 rounded-full border-2 object-cover  border-white shadow-lg" />
+
 
 
                     {pointer.name && (

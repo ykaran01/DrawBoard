@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as fabric from "fabric";
-import { PointerIcon } from "lucide-react";
+
+
 
 export const useCanvasDrawing = ({
   canvasRef,
@@ -9,25 +10,36 @@ export const useCanvasDrawing = ({
   color,
   size,
   socket,
-  username
+  username,
+  ispanning,
+  
 }) => {
   const isDrawingShape = useRef(false);
   const startPointer = useRef({ x: 0, y: 0 });
   const activeShape = useRef(null);
   const arrowRef = useRef(null);
-
+  const lastposition = useRef({ x: 0, y: 0 })
+ 
+ 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const handleMouseDown = (options) => {
-
+      if (ispanning.current && lastposition.current !== null) {
+       
+        const X = options.e.clientX
+        const Y = options.e.clientY
+        lastposition.current = { x: X, y: Y };
+        return;
+      }
       const validModes = ["rectangle", "circle", "triangle", "segment", "arrow"];
       if (!validModes.includes(currentMode)) return;
 
       isDrawingShape.current = true;
       const pointerPos = canvas.getScenePoint(options.e);
       startPointer.current = pointerPos;
+
 
       const baseProperties = {
         left: pointerPos.x,
@@ -95,12 +107,21 @@ export const useCanvasDrawing = ({
     };
 
     const handleMouseMove = (options) => {
+      if (ispanning.current) {
+        const dx = options.e.clientX - lastposition.current.x;
+        const dy = options.e.clientY - lastposition.current.y;
+        canvas.relativePan(
+          new fabric.Point(dx, dy)
+        );
+        lastposition.current = { x: options.e.clientX, y: options.e.clientY }
+
+      }
+
       if (!isDrawingShape.current) return;
 
       const pointerPos = canvas.getScenePoint(options.e);
       const startX = startPointer.current.x;
       const startY = startPointer.current.y;
-
 
 
 
@@ -150,6 +171,8 @@ export const useCanvasDrawing = ({
     };
 
     const handleMouseUp = () => {
+
+
       if (!isDrawingShape.current) return;
 
       isDrawingShape.current = false;
@@ -194,10 +217,10 @@ export const useCanvasDrawing = ({
       if (zoom > 20) zoom = 20
 
       canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom)
-      options.e.preventDefault();
-      options.e.stopPropagation();
+
     }
     const sendingCurrent = (options) => {
+      
       const position = canvas.getScenePoint(options.e)
       if (!username) return
       socket.emit("current-address", {
@@ -221,7 +244,7 @@ export const useCanvasDrawing = ({
       canvas.off("mouse:move", handleMouseMove);
       canvas.off("mouse:up", handleMouseUp);
       canvas.off("mouse:wheel", Zoomproblem)
-      canvas.off("mouse:over", sendingCurrent)
+      canvas.off("mouse:move", sendingCurrent)
     };
   }, [currentMode, color, size, canvasRef, setCurrentMode, socket]);
 };

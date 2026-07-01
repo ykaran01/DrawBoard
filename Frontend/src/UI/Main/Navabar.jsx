@@ -4,8 +4,6 @@ import {
   Undo2,
   Redo2,
   Trash2,
-  Download,
-  Check,
   Edit2,
   SquareArrowRightEnter
 } from 'lucide-react';
@@ -18,8 +16,23 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 import { useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button"
 
-import { downloaddata } from '@/Hooks/exportData';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { downloaddata ,convertjson,convetSvg } from '@/Hooks/exportData';
+import {
+  Download,
+  Image,
+  FileImage,
+  FileJson,
+  FileText,
+} from "lucide-react";
 
 export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, title, setitle }) => {
   const naviagte = useNavigate()
@@ -33,12 +46,10 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
     })
   })
 
-  const handleleave = ()=>{
-
+  const handleleave = () => {
+    naviagte('/dash')
+    socket.emit("room_leave")
   }
-
-
-
   return (
     <nav className="w-full h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between  shadow-sm relative ">
 
@@ -69,10 +80,7 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
             <Edit2 size={12} className="text-slate-400 opacity-0 group-hover:opacity-100 transition" />
           </div>
         )}
-        <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200/60 text-emerald-600 text-xs px-2 py-0.5 rounded-full font-medium">
-          <Check size={12} strokeWidth={3} />
-          <span>Saved</span>
-        </div>
+
       </div>
       <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-1 flex items-center gap-0.5 shadow-inner">
         <button
@@ -124,19 +132,32 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
 
         <div className="flex items-center gap-4">
 
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              downloaddata(canvasfileref.current)
-            }}
-            className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium text-xs px-3 py-2 rounded-xl transition active:scale-95">
-            <Download size={13} />
-            <span>Download</span>
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Export</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem   onClick={() => downloaddata(canvasfileref.current)} >
+                  <Image   className="mr-2 h-4 w-4" />
+                  PNG
+                </DropdownMenuItem>
+                <DropdownMenuItem  onClick={() => convetSvg(canvasfileref.current)} >
+                  <FileImage className="mr-2 h-4 w-4" />
+                  SVG
+                </DropdownMenuItem>
+                <DropdownMenuItem  onClick={() => convertjson(canvasfileref.current)} >
+                  <FileJson className="mr-2 h-4 w-4" />
+                  JSON
+                </DropdownMenuItem>
+            
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <button
             onClick={handleleave}
-            className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2 rounded-xl ">
+            className="flex items-center gap-1.5 bg-red-400 hover:bg-red-700 text-white font-bold text-xs px-4 py-2 rounded-xl ">
             <SquareArrowRightEnter size={13} />
             <span>Leave Room</span>
           </button>

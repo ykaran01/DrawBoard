@@ -34,13 +34,17 @@ export const usecanvs = (canvasRef, canvasfileref, background, current, undoStac
             undoStack.current.push(options.target);
             redoStack.current = [];
             socket.emit("canvas-data", options.target.toObject(["id"]));
+            
             await  saveBoard(canvas,id)
+           
         });
 
         canvas.on("object:modified", async(options) => {
             if (options.target.programmatic) return;
             socket.emit("canvas-data", options.target.toObject(["id"]));
+            
              await saveBoard(canvas,id)
+             
         });
 
         return () => {
