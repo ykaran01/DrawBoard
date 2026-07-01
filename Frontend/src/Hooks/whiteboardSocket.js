@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import * as fabric from "fabric";
 import { socket } from "../socket";
 
-export const useSocketCanvas = (canvasRef) => {
+export const useSocketCanvas = (canvasRef, setuserpointer) => {
 
   useEffect(() => {
 
@@ -53,15 +53,28 @@ export const useSocketCanvas = (canvasRef) => {
 
       canvas.clear();
     };
+    const handlepointer = (data) => {
+      console.log(data)
+      setuserpointer((prev) => ({
+        ...prev,
+        [data.id]: data
+      }))
+    }
+
+
 
     socket.on("canvas_recieve", handleCanvasReceive);
     socket.on("undo", handleUndo);
     socket.on("clear", handleClear);
+    socket.on("canvas_pointer", handlepointer)
+    
+
 
     return () => {
       socket.off("canvas_recieve");
       socket.off("undo");
       socket.off("clear");
+      socket.off('canvas_pointer')
     };
 
   }, [canvasRef]);

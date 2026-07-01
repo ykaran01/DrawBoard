@@ -4,7 +4,7 @@ import SignUp from './UI/Sigin/signUp'
 import { Another } from './UI/Main/Another'
 import SignIn from './UI/Sigin/SignIn'
 import { UserProvider } from './Userprovider'
-
+import DashBoard from './UI/Main/DashBoard'
 import Home from './UI/Home/Home'
 const App = () => {
 
@@ -19,7 +19,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-
+                <Route  path="/"  element={<DashBoard />}  ></Route>
                 <Route path='/signUp' element={<SignUp />} />
                 <Route element={<ProtectedLayout />} >
                     <Route path='/signIn' element={<SignIn />} />

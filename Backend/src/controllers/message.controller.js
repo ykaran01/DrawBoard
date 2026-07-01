@@ -8,7 +8,10 @@ export const createMessage = async (message, roomId, sender) => {
         roomId,
         message,
         sender,
-    });
+    
+    }).then((msg) =>
+        msg.populate("sender", "username avatar")
+    );
 };
 
 
@@ -16,6 +19,7 @@ export const getAllMessages = asyncHandler(async(req,res)=>{
     const {roomId} = req.params
 
     const messages = await Message.find({roomId:roomId})
+                    .populate("sender","avatar username")
                     .sort({ createdAt: 1 })
                     .limit(80)
 

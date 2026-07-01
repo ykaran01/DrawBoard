@@ -29,7 +29,7 @@ const SignIn = () => {
                 naviagte('/dash')
 
         } catch (err) {
-            console.log(err.message)
+            alert(err.message)
         }
 
 

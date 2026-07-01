@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as fabric from "fabric";
+import { PointerIcon } from "lucide-react";
 
 export const useCanvasDrawing = ({
   canvasRef,
@@ -8,6 +9,7 @@ export const useCanvasDrawing = ({
   color,
   size,
   socket,
+  username
 }) => {
   const isDrawingShape = useRef(false);
   const startPointer = useRef({ x: 0, y: 0 });
@@ -94,16 +96,13 @@ export const useCanvasDrawing = ({
 
     const handleMouseMove = (options) => {
       if (!isDrawingShape.current) return;
-      
+
       const pointerPos = canvas.getScenePoint(options.e);
       const startX = startPointer.current.x;
       const startY = startPointer.current.y;
 
-      socket.emit("current-address", {
-        id: socket.id,
-        x: pointerPos.x,
-        y: pointerPos.y,
-      });
+
+
 
       if (activeShape.current) {
         if (currentMode === "rectangle" || currentMode === "triangle") {
@@ -198,11 +197,22 @@ export const useCanvasDrawing = ({
       options.e.preventDefault();
       options.e.stopPropagation();
     }
+    const sendingCurrent = (options) => {
+      const position = canvas.getScenePoint(options.e)
+      if (!username) return
+      socket.emit("current-address", {
+        id: socket.id,
+        name: username,
+        x: position.x,
+        y: position.y,
+      });
+    }
 
     canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:move", handleMouseMove);
     canvas.on("mouse:up", handleMouseUp);
     canvas.on("mouse:wheel", Zoomproblem)
+    canvas.on("mouse:move", sendingCurrent)
 
 
 
@@ -211,6 +221,7 @@ export const useCanvasDrawing = ({
       canvas.off("mouse:move", handleMouseMove);
       canvas.off("mouse:up", handleMouseUp);
       canvas.off("mouse:wheel", Zoomproblem)
+      canvas.off("mouse:over", sendingCurrent)
     };
   }, [currentMode, color, size, canvasRef, setCurrentMode, socket]);
 };

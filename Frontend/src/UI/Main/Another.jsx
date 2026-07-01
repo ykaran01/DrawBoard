@@ -16,12 +16,14 @@ import Navabar from './Navabar.jsx';
 import { useParams } from 'react-router-dom';
 import { getBoard } from './services/servies.js';
 import { saveBoard } from './services/servies.js';
-
+import { useNavigate } from 'react-router-dom';
 export const Another = () => {
 
   const canvasRef = useRef(null);
   const canvasfileref = useRef(null);
-  const { fileInputRef } = useContext(UserContext)
+
+  const { fileInputRef, user } = useContext(UserContext)
+
   const [size, setSize] = useState(3);
   const [current, setcurrent] = useState("line");
   const [color, setcolor] = useState("black");
@@ -34,11 +36,22 @@ export const Another = () => {
   const [elements, setElements] = useState(null)
   const { roomid } = useParams()
   const [loading, setloading] = useState(false)
-  const [userspointer, setuserpointer] = useState([])
+  const [userspointer, setuserpointer] = useState({})
   const [title, setitle] = useState('')
 
-  useSocketCanvas(canvasfileref)
+  const naviagte = useNavigate()
 
+  useSocketCanvas(canvasfileref, setuserpointer)
+useEffect(() => {
+    if (!user || !roomid) return;
+    socket.emit("join-room", {
+        roomId: roomid,
+        user,
+    });
+    return ()=>{
+      socket.emit("room_leave")
+    }
+}, [roomid, user?._id]);
 
 
   const addText = () => {
@@ -132,6 +145,9 @@ export const Another = () => {
       try {
 
         const { elements, name } = await getBoard(roomid);
+        if (elements == null && name == null) {
+          naviagte('/dash')
+        }
         setitle(name || 'Untitled')
 
         setElements(elements || {})
@@ -139,12 +155,14 @@ export const Another = () => {
         undoStack.current = elements
 
       } catch (err) {
-        console.error(err);
+
+        alert(err.message)
       }
     };
 
     fetchBoard();
   }, [roomid]);
+
   useEffect(() => {
     if (!canvasfileref.current || !elements) return;
     setloading(true)
@@ -163,18 +181,20 @@ export const Another = () => {
 
   }, [elements]);
 
-  useEffect(() => {
-    socket.emit("join-room", roomid);
-  }, [roomid]);
 
 
 
 
+
+
+
+ 
   usecanvs(canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, roomid)
 
-  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background, chatopen });
+  useDrawingMode({ canvasRef: canvasfileref, current, color, size, opacity: Opacity, background, chatopen
+ });
 
-  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, });
+  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, username: user?.username });
   if (loading) {
     return (
       <>
@@ -194,7 +214,7 @@ export const Another = () => {
 
   return (
     <>
-      <Messages chatopen={chatopen} setchatopen={setchatopen} roomid={roomid}  />
+      <Messages chatopen={chatopen} setchatopen={setchatopen} roomid={roomid} />
       <Navabar
         handleUndo={handleUndo}
         handleRedo={handleRedo}
@@ -224,6 +244,38 @@ export const Another = () => {
               ref={canvasRef}
               className="absolute inset-0"
             />
+            {
+              Object.keys(userspointer).map((key) => {
+                const pointer = userspointer[key];
+                console.log(userspointer)
+                if (key === socket.id) {
+                  return null
+                }
+                return (
+                  <div
+                    key={key}
+                    style={{
+                      top: `${pointer.y}px`,
+                      left: `${pointer.x}px`,
+                      transform: 'translate(-50%, -50%)',
+                    }}
+                    className="absolute pointer-events-none"
+                  >
+
+                    <div className="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-lg" />
+
+
+                    {pointer.name && (
+                      <span className="ml-4 px-2 py-0.5 text-xs bg-gray-800 text-white rounded shadow">
+                        {pointer.name}
+                      </span>
+                    )}
+                  </div>
+                );
+              })
+            }
+
+
           </div>
 
 

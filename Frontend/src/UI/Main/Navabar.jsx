@@ -1,23 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { socket } from '@/socket';
 import {
   Undo2,
   Redo2,
   Trash2,
   Download,
-  Share2,
   Check,
-  Edit2
+  Edit2,
+  SquareArrowRightEnter
 } from 'lucide-react';
-import { downloaddata } from '@/Hooks/exportData';
-export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, title, setitle }) => {
+import {
+  Avatar,
 
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from "@/components/ui/avatar"
+import { useNavigate } from 'react-router-dom';
+
+import { downloaddata } from '@/Hooks/exportData';
+
+export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, title, setitle }) => {
+  const naviagte = useNavigate()
+
+  const [users, setusers] = useState([])
   const [isEditingName, setIsEditingName] = useState(false);
 
+  useEffect(() => {
+    socket.on("present_user", (data) => {
+      setusers(data)
+    })
+  })
 
-  const activeUsers = [
-    { initials: "JD", color: "bg-blue-500" },
-    { initials: "+3", color: "bg-pink-500" },
-  ];
+  const handleleave = ()=>{
+
+  }
+
+
 
   return (
     <nav className="w-full h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between  shadow-sm relative ">
@@ -71,7 +91,7 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
         </button>
 
 
-        <div className="w-[1px] h-4 bg-slate-200 mx-1"></div>
+
 
         <button
           onClick={clearCanvas}
@@ -86,14 +106,19 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
       <div className="flex items-center gap-4">
 
         <div className="flex items-center -space-x-1.5">
-          {activeUsers.map((user, idx) => (
-            <div
-              key={idx}
-              className={`w-7 h-7 rounded-full border-2 border-white ${user.color} flex items-center justify-center text-[10px] font-bold text-white shadow-sm`}
-            >
-              {user.initials}
-            </div>
-          ))}
+          <AvatarGroup>
+            {users.slice(0, Math.min(2, users.length)).map((items) => {
+              return (
+
+                <Avatar>
+                  <AvatarImage src={items.avatar} alt="@shadcn" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+
+              )
+            })}
+            {users.length > 2 && <AvatarGroupCount>+{users.length - 2}</AvatarGroupCount>}
+          </AvatarGroup>
         </div>
 
 
@@ -109,9 +134,11 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
             <span>Download</span>
           </button>
 
-          <button className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-md shadow-purple-600/10 transition active:scale-95">
-            <Share2 size={13} />
-            <span>Share Room</span>
+          <button
+            onClick={handleleave}
+            className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2 rounded-xl ">
+            <SquareArrowRightEnter size={13} />
+            <span>Leave Room</span>
           </button>
         </div>
 

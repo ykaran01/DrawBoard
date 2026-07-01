@@ -1,12 +1,12 @@
 import API from '../../../service/API.sevice.js'
-import { socket } from '@/socket.js';
+
 export const createRoom = async (boardId, password, title) => {
     try {
         const { data } = await API.post('/board/create', { boardId, password, title });
 
         return data.data.boardId
     } catch (err) {
-        console.log(err.message)
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
@@ -20,8 +20,7 @@ export const joinRoom = async (boardId, password) => {
 
         return data.success;
     } catch (err) {
-        console.error(err.response?.data || err.message);
-        return false;
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 };
 
@@ -31,7 +30,7 @@ export const getUserBoard = async () => {
         const { data } = await API.get('/board/myboards')
         return data.data
     } catch (err) {
-        console.log(err.message)
+       throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
@@ -41,7 +40,7 @@ export const deleteboard = async (boardId) => {
         console.log(data)
 
     } catch (err) {
-        console.log(err.message)
+         throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
@@ -50,9 +49,27 @@ export const changeImage = async (boardId, formdata) => {
         const { data } = await API.patch(`/board/changeImage/${boardId}`, formdata)
         console.log(data)
     } catch (err) {
-        console.log(err.message)
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
+
+export const changeAvatar = async(formdata)=>{
+   try{
+        const res = await API.patch('/user/avatar',formdata)
+        
+   }catch(err){
+    throw new Error(err.response?.data?.message || "Something went wrong");
+   } 
+}
+
+export const changename = async(name)=>{
+    try{
+        const res = await API.patch('/user/name',{name})
+       
+    }catch(err){
+        throw new Error(err.response?.data?.message || "Something went wrong");
+    }
+}
 
 

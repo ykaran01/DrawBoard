@@ -7,8 +7,7 @@ export const registerUser = async (data) => {
         console.log(response.data)
         return response.data.success
     } catch (err) {
-        const errorMessage = err.message || "Something went wrong";
-        throw new Error(errorMessage)
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
@@ -21,9 +20,8 @@ export const verifyotp = async (email, OTP) => {
         }
         return false;
     } catch (err) {
-        const errorMessage = err.response?.data?.message || "Invalid or expired verification code.";
-        console.error("OTP Verification Error:", errorMessage);
-        throw new Error(errorMessage);
+        
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
@@ -36,7 +34,7 @@ export const loginUser = async(info)=>{
         }
     
     }catch(err){
-        console.log(err)
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
     
 

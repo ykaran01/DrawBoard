@@ -10,7 +10,9 @@ import { Merge } from 'lucide-react';
 import { PencilRuler } from 'lucide-react';
 import { createRoom, joinRoom } from "./services/services";
 import { useNavigate } from "react-router-dom";
+
 export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
+  
   const navigate = useNavigate()
   const [mode, setMode] = useState("select"); 
   const [roomId, setRoomId] = useState("");
@@ -46,7 +48,11 @@ export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
       }
       setIsOpen(false);
       setMode("select"); 
-    } finally {
+    }catch(err){
+      alert(err.message)
+    } 
+    
+    finally {
       setIsLoading(false);
     }
   };

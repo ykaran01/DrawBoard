@@ -10,6 +10,7 @@ import { sendMail } from '../helper/email.helper.js'
 import bcrypt from "bcryptjs"
 import mongoose from "mongoose"
 
+
 export const registerUser = asyncHandler(async (req, res) => {
 
     const { name, email, password, username } = req.body
@@ -123,24 +124,38 @@ export const loginUser = asyncHandler(async (req, res) => {
 })
 
 export const addOrUpdateAvatar = asyncHandler(async (req, res) => {
-    const { email, _id } = req.user;
-    const file = req.file
-    if (!file) {
-        throw new ApiError(404, "Avatar does not fount")
-    }
-    const image = uploadOnCloudnary(file)
+    const { _id } = req.user;
+    const file = req.file;
 
-    const user = await User.findByIdAndUpdate(_id,
-        {
-            $set: { avatar: image.url }
-        },
-        { new: true }
-    )
-    if (!user) {
-        throw new ApiError(400, "user Not found")
+    if (!file) {
+        throw new ApiError(400, "Avatar file is required");
     }
-    res.status(200).json(new ApiResponse(200, user, "Avatar Changed Coorectly"))
-})
+
+    const image = await uploadOnCloudnary(file.path);
+    
+    if (!image || !image.url) {
+        throw new ApiError(500, "Failed to upload avatar");
+    }
+
+
+    const user = await User.findByIdAndUpdate(
+        _id,
+        {
+            $set: {
+                avatar: image.url,
+            },
+        },
+        
+    );
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Avatar updated successfully")
+    );
+});
 
 export const getUser = asyncHandler(async (req, res) => {
 
@@ -178,4 +193,24 @@ export const refresh = asyncHandler(async (req, res) => {
     };
     res.status(200).cookie("accessToken", accessToken).json(new ApiResponse(200, null, "token generated sucessfully"))
 
+})
+
+export const changeName = asyncHandler(async(req,res)=>{
+    const {_id} = req.user
+    const {name} = req.body
+    console.log(name)
+    if(!name ){
+        throw new ApiError(400,"Name is required")
+    }
+    const user = await User.findByIdAndUpdate(_id,{
+        $set:{name:name}
+        
+        }
+    ,{
+        new :true
+    })
+    if(!user){
+        throw new ApiError(404,"User Not Found")
+    }
+    res.status(200).json(new ApiResponse(200,null,"User Name SuccessFully Change"))
 })

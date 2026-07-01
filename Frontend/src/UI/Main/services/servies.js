@@ -3,10 +3,14 @@ import API from "@/service/API.sevice"
 export const getBoard = async (id) => {
     try {
         const { data } = await API.get(`/board/get/${id}`)
+        if(data.success){
+            return {elements:data.data.elements,name:data.data.title}
+        }
+           return  {elements:null,name:null}
         
-        return {elements:data.data.elements,name:data.data.title}
+        
     } catch (err) {
-        console.log(err.message)
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
@@ -28,7 +32,7 @@ export const saveBoard = (canvas, id) => {
 
             console.log("Board Saved");
         } catch (err) {
-            console.error(err);
+            throw new Error(err.response?.data?.message || "Something went wrong");
         }
     }, 1500);
 }
@@ -39,6 +43,6 @@ export const getMessages = async(roomId)=>{
         return data.data
         
     }catch(err){
-        console.log(err.message)
+      throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }

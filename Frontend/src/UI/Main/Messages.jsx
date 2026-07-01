@@ -10,9 +10,9 @@ import {
 import { useContext } from "react";
 import { UserContext } from "@/Userprovider";
 import { getMessages } from "./services/servies";
-const Messages = ({ chatopen, setchatopen ,roomid}) => {
+const Messages = ({ chatopen, setchatopen, roomid }) => {
     const { user } = useContext(UserContext)
-    
+
     const [message, setmessage] = useState("");
     const [allmessages, setallmessages] = useState([]);
 
@@ -20,10 +20,12 @@ const Messages = ({ chatopen, setchatopen ,roomid}) => {
 
     useEffect(() => {
         const receiveMessage = (data) => {
-            
+
             setallmessages((prev) => [...prev, data]);
+            console.log(data)
         };
         socket.on("message-recieve", receiveMessage);
+        
         return () => socket.off("message-recieve", receiveMessage);
     }, []);
 
@@ -32,32 +34,35 @@ const Messages = ({ chatopen, setchatopen ,roomid}) => {
     }, [allmessages]);
 
     const handleSubmit = (e) => {
+        if (user == null) return
         e.preventDefault();
         if (!message.trim()) return;
 
-       
+
         const usermessage = {
             message: message.trim(),
-            user: user._id,
-            roomid
-         
+            user: user?._id,
+            roomid,
+          
+
         };
 
         socket.emit("message-sent", usermessage);
+        
         setmessage("");
 
     };
-    useEffect(()=>{
-        const fetchMessage = async()=>{
-            try{
-               const data =  await getMessages(roomid)
-               setallmessages(data)
-            }catch(err){
-                console.log(err.message)
+    useEffect(() => {
+        const fetchMessage = async () => {
+            try {
+                const data = await getMessages(roomid)
+                setallmessages(data)
+            } catch (err) {
+                alert(err.message)
             }
         }
         fetchMessage()
-    },[])
+    }, [])
 
     return (
         <Sheet open={chatopen} onOpenChange={setchatopen}>
@@ -79,30 +84,55 @@ const Messages = ({ chatopen, setchatopen ,roomid}) => {
                             No messages yet. Say hi!
                         </p>
                     )}
-                    {allmessages.map((item, index) => (
-                        <div
-                            key={index}
-                            className={`flex ${item.sender === user?._id ? "justify-end" : "justify-start"}`}
-                        >
+
+                    {allmessages.map((item, index) => {
+                        const isMe = item.sender._id === user?._id;
+
+                        return (
                             <div
-                                className={`max-w-[80%] rounded-2xl px-3 py-2 shadow-sm ${item.sender === user?._id
-                                    ? "bg-purple-500 text-white rounded-br-md"
-                                    : "bg-white text-gray-800 rounded-bl-md border border-purple-100"
+                                key={index}
+                                className={`flex items-end gap-2 mb-3 ${isMe ? "justify-end" : "justify-start"
                                     }`}
                             >
-                                {item.sender !== user?._id && (
-                                    <p className="text-[10px] font-semibold text-purple-400 mb-0.5">
-                                        {user?.username}
-                                    </p>
+
+                                {!isMe && (
+                                    <img
+                                        src={item.sender.avatar}
+                                        alt={item.sender.username}
+                                        className="w-6 h-6 rounded-full object-cover"
+                                    />
                                 )}
-                                <p className="text-sm break-words">{item.message}</p>
-                                <p className={`text-[10px] text-right mt-0.5 ${item.sender === user?._id ? "text-purple-200" : "text-gray-400"
-                                    }`}>
-                                   {new Date(item.createdAt).toLocaleTimeString()}
-                                </p>
+
+                                <div
+                                    className={`max-w-[80%] rounded-2xl px-3 py-2 shadow-sm ${isMe
+                                            ? "bg-purple-500 text-white rounded-br-md"
+                                            : "bg-white text-gray-800 rounded-bl-md border border-purple-100"
+                                        }`}
+                                >
+                                    {!isMe && (
+                                        <p className="text-[10px] font-semibold text-purple-500 mb-1">
+                                            {item.sender.username}
+                                        </p>
+                                    )}
+
+                                    <p className="text-sm break-words">{item.message}</p>
+
+                                    <p
+                                        className={`text-[10px] text-right mt-1 ${isMe ? "text-purple-200" : "text-gray-400"
+                                            }`}
+                                    >
+                                        {new Date(item.createdAt).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </p>
+                                </div>
+
+
+                               
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                     <div ref={bottomRef} />
                 </div>
 
