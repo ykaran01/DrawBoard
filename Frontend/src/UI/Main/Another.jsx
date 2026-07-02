@@ -39,6 +39,8 @@ export const Another = () => {
   const [loading, setloading] = useState(false)
   const [userspointer, setuserpointer] = useState({})
   const [title, setitle] = useState('')
+  const [toggle, setoggle] = useState(false)
+
  
 
 
@@ -210,13 +212,23 @@ export const Another = () => {
   useEffect(() => {
 
     const handleup = (options) => {
-     
+    const tag = options.target.tagName 
+    if (tag === "INPUT" || tag === "TEXTAREA" || options.target.isContentEditable) return;
+
+       options.preventDefault()
+      if (options.code === "Space") {
+      options.preventDefault();
+      ispanning.current = true;
+      return;
+    }
+      if (!["Delete", "KeyZ", "KeyY"].includes(e.code)) return;
       options.preventDefault()
-      if(options.code=="Delete" || options.code=="Backspace") clearCanavs()
+       if (options.code === "Space") ispanning.current = true;
+      if(options.code=="Delete" ) clearCanavs()
       else if(options.code=="KeyZ") handleUndo()
       else if(options.code=="KeyY") handleRedo()
-      else if (options.code === "Space") ispanning.current = true;
-      else return
+     
+      
       
     }
     const handledown = (options) => {
@@ -233,8 +245,6 @@ export const Another = () => {
       window.removeEventListener("keydown", handledown)
      
     }
-
-
   }, [])
 
   usecanvs(canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, roomid)
@@ -242,7 +252,7 @@ export const Another = () => {
   useDrawingMode({
     canvasRef: canvasfileref, current, color, size, opacity: Opacity, background, chatopen});
 
-  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, username: user?.username ,ispanning});
+  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, username: user?.username ,ispanning ,toggle});
 
   if (loading) {
     return (
@@ -271,8 +281,11 @@ export const Another = () => {
         canvasfileref={canvasfileref}
         title={title}
         setitle={setitle}
-        
+        setoggle={setoggle}
+        toggle={toggle}
       />
+        
+      
       <div className="min-h-[85vh]  relative bg-purple-100 p-4">
 
         <div className="flex gap-4 h-[90vh]">
@@ -289,10 +302,10 @@ export const Another = () => {
 
           <div
             style={{ pointerEvents: chatopen ? 'none' : 'auto' }}
-            className="relative w-full h-[85vh] bg-white shadow shadow-purple-400 rounded-2xl overflow-hidden">
+            className="relative w-full h-[85vh] bg-white    shadow shadow-purple-400 rounded-2xl overflow-hidden">
             <canvas
               ref={canvasRef}
-              className="absolute inset-0"
+              className="absolute inset-0 cursor-crosshair "
             />
             {
               Object.keys(userspointer).map((key) => {

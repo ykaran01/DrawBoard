@@ -19,12 +19,13 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route  path="/"  element={<DashBoard />}  ></Route>
-                <Route path='/signUp' element={<SignUp />} />
+
+                <Route path='/signup' element={<SignUp />} />
                 <Route element={<ProtectedLayout />} >
-                    <Route path='/signIn' element={<SignIn />} />
-                    <Route path="/room/:roomid" element={<Another/>} />
-                    <Route path="/dash" element={<Home/>} />
+                    <Route path='/login' element={<SignIn />} />
+                    <Route path="/room/:roomid" element={<Another />} />
+                    <Route path="/dash" element={<Home />} />
+                    <Route path='/' element={<DashBoard />} />
 
                 </Route>
                 <Route path='/*' element={<div className='bg-black font-extrabold w-screen h-screen flex justify-center items-center text-5xl text-white '>

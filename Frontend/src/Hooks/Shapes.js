@@ -12,6 +12,7 @@ export const useCanvasDrawing = ({
   socket,
   username,
   ispanning,
+  toggle,
   
 }) => {
   const isDrawingShape = useRef(false);
@@ -46,11 +47,12 @@ export const useCanvasDrawing = ({
         top: pointerPos.y,
         width: 10,
         height: 10,
-        fill: "transparent",
+        fill: (toggle) ? color : "transparent",
         stroke: color,
         strokeWidth: size,
         selectable: false,
         id: Date.now().toString(),
+        
       };
 
       if (currentMode === "rectangle") {

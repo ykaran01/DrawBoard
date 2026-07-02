@@ -25,7 +25,7 @@ export  const UserProvider = ({ children }) => {
 
   return (
 
-    <UserContext.Provider value={{ user, loading ,fileInputRef }}>
+    <UserContext.Provider value={{ user, loading ,fileInputRef ,setUserData }}>
       {children}
     </UserContext.Provider>
   );

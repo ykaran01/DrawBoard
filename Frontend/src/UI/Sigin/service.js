@@ -25,12 +25,14 @@ export const verifyotp = async (email, OTP) => {
     }
 }
 
-export const loginUser = async(info)=>{
+export const loginUser = async(info,setuser)=>{
     try{
        
         const {data} = await  API.post('/user/login',info)
         if(data.statsCode==200 || data.data.statsCode==200 || data.success){
-            return true
+            const {data} =   await API.get('/user/me')
+            setuser(data.data)
+
         }
     
     }catch(err){

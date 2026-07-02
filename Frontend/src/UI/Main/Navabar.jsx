@@ -4,7 +4,7 @@ import {
   Undo2,
   Redo2,
   Trash2,
-  Edit2,
+  Users,
   SquareArrowRightEnter
 } from 'lucide-react';
 import {
@@ -25,20 +25,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { downloaddata ,convertjson,convetSvg } from '@/Hooks/exportData';
+import { downloaddata, convertjson, convetSvg } from '@/Hooks/exportData';
 import {
-  Download,
   Image,
   FileImage,
   FileJson,
-  FileText,
+  PaintBucket
 } from "lucide-react";
-
-export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, title, setitle }) => {
+import UserList from './UserList';
+export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, title, toggle, setoggle }) => {
   const naviagte = useNavigate()
-
+  const [open, setOpen] = useState(false);
   const [users, setusers] = useState([])
-  const [isEditingName, setIsEditingName] = useState(false);
+
 
   useEffect(() => {
     socket.on("present_user", (data) => {
@@ -50,52 +49,43 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
     naviagte('/dash')
     socket.emit("room_leave")
   }
+
+
   return (
     <nav className="w-full h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between  shadow-sm relative ">
 
+      <UserList open={open} setOpen={setOpen} users={users} />
 
       <div className="flex items-center gap-4">
         <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center font-bold text-sm text-white">
           W
         </div>
 
-        {isEditingName ? (
-          <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2 py-1">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setitle(e.target.value)}
-              onBlur={() => setIsEditingName(false)}
-              onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
-              autoFocus
-              className="bg-transparent border-none text-sm font-semibold text-slate-800 focus:outline-none w-44"
-            />
-          </div>
-        ) : (
-          <div
-            onClick={() => setIsEditingName(true)}
-            className="flex items-center gap-2 cursor-pointer group px-1 py-0.5 rounded hover:bg-slate-50 transition"
-          >
-            <span className="text-sm font-semibold text-slate-800">{title}</span>
-            <Edit2 size={12} className="text-slate-400 opacity-0 group-hover:opacity-100 transition" />
-          </div>
-        )}
+
+        <div
+
+          className="flex items-center gap-2  group px-1 py-0.5 rounded hover:bg-slate-50 transition"
+        >
+          <span className=" font-semibold text-slate-800">{title}</span>
+
+        </div>
+
 
       </div>
       <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-1 flex items-center gap-0.5 shadow-inner">
         <button
           onClick={handleUndo}
-          className="p-2 text-slate-600 hover:bg-white hover:text-purple-600 rounded-lg transition active:scale-95"
+          className="p-2 text-slate-600 hover:bg-white  cursor-pointer hover:text-purple-600 rounded-lg transition active:scale-95"
           title="Undo"
         >
-          <Undo2 size={15} />
+          <Undo2  className='hover:scale-105' size={15} />
         </button>
         <button
           onClick={handleRedo}
-          className="p-2 text-slate-600 hover:bg-white hover:text-purple-600 rounded-lg transition active:scale-95"
+          className="p-2 text-slate-600 hover:bg-white cursor-pointer  hover:text-purple-600 rounded-lg transition active:scale-95"
           title="Redo"
         >
-          <Redo2 size={15} />
+          <Redo2  className='hover:scale-105' size={15} />
         </button>
 
 
@@ -103,10 +93,20 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
 
         <button
           onClick={clearCanvas}
-          className="p-2 text-slate-400 hover:bg-white hover:text-rose-600 rounded-lg transition active:scale-95"
+          className="p-2 text-slate-400  cursor-pointer hover:bg-white hover:text-rose-600  rounded-lg transition active:scale-95"
           title="Clear Canvas"
         >
-          <Trash2 size={15} />
+          <Trash2  className='hover:scale-105' size={15} />
+        </button>
+        <button
+          onClick={() => setoggle((prev) => !prev)}
+          className={`p-2 rounded-lg transition   cursor-pointer active:scale-95 ${toggle
+              ? "bg-purple-600 text-white"
+              : "bg-transparent text-gray-500 hover:bg-gray-100"
+            }`}
+          title={toggle ? "Filled Shapes" : "Outline Shapes"}
+        >
+          <PaintBucket  className='hover:scale-105' size={16} />
         </button>
       </div>
 
@@ -130,6 +130,9 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
         </div>
 
 
+
+
+
         <div className="flex items-center gap-4">
 
           <DropdownMenu>
@@ -138,19 +141,19 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuGroup>
-                <DropdownMenuItem   onClick={() => downloaddata(canvasfileref.current)} >
-                  <Image   className="mr-2 h-4 w-4" />
+                <DropdownMenuItem onClick={() => downloaddata(canvasfileref.current)} >
+                  <Image className="mr-2 h-4 w-4" />
                   PNG
                 </DropdownMenuItem>
-                <DropdownMenuItem  onClick={() => convetSvg(canvasfileref.current)} >
+                <DropdownMenuItem onClick={() => convetSvg(canvasfileref.current)} >
                   <FileImage className="mr-2 h-4 w-4" />
                   SVG
                 </DropdownMenuItem>
-                <DropdownMenuItem  onClick={() => convertjson(canvasfileref.current)} >
+                <DropdownMenuItem onClick={() => convertjson(canvasfileref.current)} >
                   <FileJson className="mr-2 h-4 w-4" />
                   JSON
                 </DropdownMenuItem>
-            
+
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -161,6 +164,12 @@ export const Navbar = ({ handleUndo, handleRedo, clearCanvas, canvasfileref, tit
             <SquareArrowRightEnter size={13} />
             <span>Leave Room</span>
           </button>
+
+        </div>
+        <div className="flex items-center gap-2">
+
+          <button onClick={() => setOpen(true)} className="  shadow-purple-600  shadow cursor-pointer text-slate-600 text-xs  py-2 px-2 rounded-full border font-semibold"> <Users /></button>
+
         </div>
 
       </div>

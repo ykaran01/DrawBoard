@@ -4,7 +4,7 @@ export const createRoom = async (boardId, password, title) => {
     try {
         const { data } = await API.post('/board/create', { boardId, password, title });
 
-        return data.data.boardId
+       return data.success
     } catch (err) {
         throw new Error(err.response?.data?.message || "Something went wrong");
     }
@@ -30,17 +30,17 @@ export const getUserBoard = async () => {
         const { data } = await API.get('/board/myboards')
         return data.data
     } catch (err) {
-       throw new Error(err.response?.data?.message || "Something went wrong");
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
 export const deleteboard = async (boardId) => {
     try {
-        const { deta } = await API.delete(`board/delete/${boardId}`)
-        console.log(data)
+        const { data } = await API.delete(`board/delete/${boardId}`)
+        return data.success
 
     } catch (err) {
-         throw new Error(err.response?.data?.message || "Something went wrong");
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
 
@@ -54,20 +54,29 @@ export const changeImage = async (boardId, formdata) => {
 }
 
 
-export const changeAvatar = async(formdata)=>{
-   try{
-        const res = await API.patch('/user/avatar',formdata)
-        
-   }catch(err){
-    throw new Error(err.response?.data?.message || "Something went wrong");
-   } 
+export const changeAvatar = async (formdata) => {
+    try {
+        const res = await API.patch('/user/avatar', formdata)
+
+    } catch (err) {
+        throw new Error(err.response?.data?.message || "Something went wrong");
+    }
 }
 
-export const changename = async(name)=>{
-    try{
-        const res = await API.patch('/user/name',{name})
-       
-    }catch(err){
+export const changename = async (name) => {
+    try {
+        const res = await API.patch('/user/name', { name })
+
+    } catch (err) {
+        throw new Error(err.response?.data?.message || "Something went wrong");
+    }
+}
+
+export const logOut = async () => {
+    try {
+        const res = await API.post('/user/logout')
+        console.log(res.data)
+    } catch (err) {
         throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }

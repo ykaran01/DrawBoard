@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/popover";
 import { useContext } from "react";
 import { UserContext } from "@/Userprovider";
+import { logOut } from './services/services'
 const Home = () => {
-  const { user } = useContext(UserContext)
+  const { user, setUserData } = useContext(UserContext)
   const [isOpen, setIsOpen] = useState(false);
   const [boards, setboards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,13 +39,19 @@ const Home = () => {
 
   useEffect(() => {
     fetchdata();
+
   }, []);
 
   const handledelete = async (boardId) => {
     try {
       await deleteboard(boardId)
+
+      const newboard = boards.filter((item) => item._id !== boardId)
+      setboards(newboard)
+
+
     } catch (err) {
-      console.log(err)
+      alert(err.message)
     }
   }
 
@@ -87,10 +94,23 @@ const Home = () => {
     }
   };
 
+  const LogOut = async () => {
+    try {
+      await logOut()
+      setUserData(null)
+      navigate('/')
+
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+
+
   return (
     <>
-      <JoinDialogBox isOpen={isOpen} setIsOpen={setIsOpen}  />
-      <ChangeName  nameopen={nameopen} setnameopen={setnameopen} user={user} />
+      <JoinDialogBox isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ChangeName nameopen={nameopen} setnameopen={setnameopen} user={user} />
       <ChangeAvatar avataropen={avataropen} setavataropen={setavataropen} avatar={user?.avatar} />
       <div className="min-h-screen bg-slate-50 text-slate-900 font-sans w-[100%] antialiased">
 
@@ -99,6 +119,9 @@ const Home = () => {
           <div className="max-full mx-auto px-4 sm:px-6 lg:px-5 h-20 flex justify-between items-center">
             <div className="text-2xl font-bold tracking-tight text-slate-900">DrawBoard</div>
             <div className="flex gap-10 items-center" >
+              <div  onClick={()=>{navigate('/')}} className="font-semibold cursor-pointer hover:underline text-blue-500" >
+                Home
+              </div>
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -119,13 +142,13 @@ const Home = () => {
                   <div className="max-w-sm w-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="flex flex-col items-center bg-black rounded-3xl p-2">
                       <img
-                        src={user?.avatar || "https://png.pngtree.com/png-vector/20240611/ourlarge/pngtree-user-profile-icon-image-vector-png-image_12640450.png" }
+                        src={user?.avatar || "https://png.pngtree.com/png-vector/20240611/ourlarge/pngtree-user-profile-icon-image-vector-png-image_12640450.png"}
                         alt="Profile"
                         className="h-20 w-20 rounded-full  object-cover border"
                       />
 
                       <h2 className="mt-4 text-xl font-semibold text-white">
-                       {user?.name}
+                        {user?.name}
                       </h2>
 
                       <p className="text-sm text-white">@{user?.username}</p>
@@ -139,19 +162,28 @@ const Home = () => {
                     </div>
 
                     <div className="mt-6 flex flex-col gap-2">
-                      <button  onClick={(e)=>{
+                      <button onClick={(e) => {
                         e.preventDefault()
                         setnameopen(true)
                       }} className="rounded-md border  cursor-pointer border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100 transition">
                         Edit Name
                       </button>
 
-                      <button  onClick={(e)=>{
+                      <button onClick={(e) => {
                         e.preventDefault()
                         setavataropen(true)
                       }} className="rounded-md border cursor-pointer border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100 transition">
                         Change Avatar
                       </button>
+                      <button onClick={(e) => {
+                        e.preventDefault()
+                        LogOut()
+
+                      }} className="rounded-md border cursor-pointer border-slate-300 px-4 text-red-500  py-2 text-sm font-medium hover:bg-slate-100 transition">
+                        LogOut
+                      </button>
+
+
                     </div>
                   </div>
                 </PopoverContent>
@@ -199,7 +231,7 @@ const Home = () => {
                           )}
                         </div>
 
-                        <div className="absolute top-2 left-3 z-30">
+                        <div className="absolute top-2   left-3 z-30">
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -207,9 +239,9 @@ const Home = () => {
                             }
 
                             }
-                            className="p-1.5 bg-white/95  rounded-full text-slate-600 shadow-sm transition-all border border-slate-200"
+                            className="p-1.5 cursor-pointer hover:bg-red-500  bg-white/95  rounded-full text-red-600  hover:text-white shadow-sm transition-all "
                           >
-                            <Trash2 color="red" size={16} strokeWidth={2.5} />
+                            <Trash2 size={16} strokeWidth={2.5} />
                           </button>
                         </div>
                         <div className="absolute top-2 right-2 z-30">
