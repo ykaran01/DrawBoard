@@ -3,7 +3,7 @@ export const asyncHandler = (fn) => async (req, res, next) => {
         await fn(req, res, next)
     } catch (err) {
        
-        let statusCode = err.code === 11000 ? 400 : err.code;
+        let statusCode =  err.code;
         statusCode = (statusCode >= 100 && statusCode < 600) ? statusCode : 500;
         
         const message = err.code === 11000 

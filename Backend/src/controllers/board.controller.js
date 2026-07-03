@@ -98,7 +98,7 @@ export const deleteBoard = asyncHandler(async (req, res) => {
     await Board.deleteOne({ _id: Id });
 
     return res.status(200).json(
-        new ApiResponse(200, {}, "Board deleted successfully")
+        new ApiResponse(200, null, "Board deleted successfully")
     );
 });
 
@@ -193,5 +193,20 @@ export const authoriseUser = asyncHandler(async(req,res)=>{
     
     res.status(200).json(new ApiResponse(200,null,"User Authorised"))
 
+
+})
+
+export const searhBoard = asyncHandler(async(req,res)=>{
+    const {name="" , sort=-1} = req.query
+    const owner = req.user._id
+    
+    const boards = await Board.find({$and:
+        [{owner:owner},
+            {title:{$regex:name,$options:'i'}}]})
+            .sort({createdAt:Number(sort)}).select("-password -elements");
+    if(!boards){
+        throw new ApiError(401,'Board Does Not Found');
+    }
+    res.status(200).json(new ApiResponse(200,boards,"Boards Fetcjed Succesfully"));
 
 })

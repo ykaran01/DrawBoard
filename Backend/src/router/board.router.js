@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userMiddleware } from "../middleware/jwt.middleware.js";
-import { addElement, changeImage, createBoard, deleteBoard, getBoard, getMyBoards, joinBoard, updateBoard ,authoriseUser} from "../controllers/board.controller.js";
+import { addElement, changeImage, createBoard, deleteBoard, getBoard, getMyBoards, joinBoard, updateBoard ,authoriseUser, searhBoard} from "../controllers/board.controller.js";
 import { upload } from "../middleware/multter.middleware.js";
 const boardrouter = Router()
 
@@ -14,4 +14,5 @@ boardrouter.put('/add/:id', addElement)
 boardrouter.post('/join', joinBoard)
 boardrouter.patch('/changeImage/:roomId', upload.single('image'),changeImage)
 boardrouter.post('/authorise/:roomId',authoriseUser)
+boardrouter.get('/search',searhBoard)
 export { boardrouter }

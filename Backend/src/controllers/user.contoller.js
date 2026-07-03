@@ -214,3 +214,15 @@ export const changeName = asyncHandler(async(req,res)=>{
     }
     res.status(200).json(new ApiResponse(200,null,"User Name SuccessFully Change"))
 })
+
+export const logout = asyncHandler(async(req,res)=>{
+    const { _id } = req.user;
+    const user = await User.findByIdAndUpdate(_id, {
+        $unset: { refreshToken: 1 }
+    }, { new: true });
+
+    if (!user) {
+        throw new ApiError(404, "User Not Found");
+    }
+    res.clearCookie("refreshToken").clearCookie("accessToken").status(200).json(new ApiResponse(200, null, "User logged out successfully"));
+});
