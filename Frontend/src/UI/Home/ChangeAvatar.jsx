@@ -8,6 +8,7 @@ import {
  
 } from "@/components/ui/dialog";
 import { changeAvatar } from "./services/services";
+import { toast } from "sonner";
 
 const ChangeAvatar = ({avataropen ,setavataropen ,avatar}) => {
  const [file, setfile] = useState(null)
@@ -23,11 +24,12 @@ const ChangeAvatar = ({avataropen ,setavataropen ,avatar}) => {
     formdata.append("avatar",file)
     try{
       await changeAvatar(formdata)
+      toast.success("Avatar Changed Successfully")
         setfile(null)
       setavataropen(false)
       
     }catch(err){
-      alert(err.message)
+      toast.error(err.message)
     }
   }
 

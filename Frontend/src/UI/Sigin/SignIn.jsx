@@ -2,19 +2,18 @@ import React, { useState, useEffect, useContext } from 'react'
 import { loginUser } from './service'
 import { useNavigate, Link } from 'react-router-dom'
 import { UserContext } from '@/Userprovider'
-
+import { toast } from 'sonner'
 import { Mail, Lock, LogIn, Loader2 } from 'lucide-react'
 
 const SignIn = () => {
     const navigate = useNavigate()
-    const { user ,setUserData} = useContext(UserContext)
+    const { user, setUserData } = useContext(UserContext)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [info, setinfo] = useState({
         email: "",
         password: ""
     })
 
- 
     useEffect(() => {
         if (user) {
             navigate('/dash')
@@ -34,12 +33,14 @@ const SignIn = () => {
 
         setIsSubmitting(true)
         try {
-            const data = await loginUser(info,setUserData)
+            const data = await loginUser(info, setUserData)
             if (data) {
+                
                 navigate('/dash')
             }
         } catch (err) {
-            alert(err.message)
+          
+            toast.error(err.message || "Invalid credentials. Please try again.")
         } finally {
             setIsSubmitting(false)
         }
@@ -47,7 +48,6 @@ const SignIn = () => {
 
     return (
         <div className='w-full min-h-screen bg-zinc-50 flex flex-col md:flex-row overflow-x-hidden'>
-
             
             <section className='left w-full md:w-4/7 min-h-[40vh] md:min-h-screen bg-gradient-to-r from-indigo-500 to-purple-900 p-6 md:p-8 flex flex-col justify-between md:justify-start gap-12 md:gap-0'>
                 <div className='text-3xl md:text-5xl font-extrabold font-sans text-white tracking-wide z-10'>
@@ -67,14 +67,12 @@ const SignIn = () => {
                 </div>
             </section>
 
-           
             <section className='right w-full md:w-3/7 min-h-[60vh] md:min-h-screen p-6 md:p-8 flex items-center justify-center bg-transparent'>
                 <div className='w-full max-w-md py-8 md:py-0 flex flex-col justify-center items-center'>
 
                     <form onSubmit={handleSubmit} className='w-full justify-center gap-5 md:gap-6 flex flex-col items-center'>
                         <h1 className='text-3xl md:text-4xl font-extrabold text-zinc-800'>Sign In</h1>
 
-                       
                         <div className='flex flex-col w-full max-w-sm gap-1.5'>
                             <label className='text-sm font-semibold text-zinc-600 px-1 flex items-center gap-1.5'>
                                 <Mail size={16} className="text-purple-500" /> Email
@@ -108,7 +106,6 @@ const SignIn = () => {
                             />
                         </div>
 
-                      
                         <button
                             type="submit"
                             disabled={isSubmitting}

@@ -81,4 +81,19 @@ export const logOut = async () => {
     }
 }
 
+export const search  = async(name,sort)=>{
+    try{
+        const {data} = await API.get('/board/search',{
+            params:{
+                name:name,
+                sort:(sort=="0")?-1:sort
+            }
+        })
+        return data.data
+
+    }catch(err){
+        throw new Error(err.response?.data?.message || "Something Went Wrong")
+    }
+}
+
 

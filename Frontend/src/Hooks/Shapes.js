@@ -13,6 +13,7 @@ export const useCanvasDrawing = ({
   username,
   ispanning,
   toggle,
+  avatar
   
 }) => {
   const isDrawingShape = useRef(false);
@@ -230,6 +231,7 @@ export const useCanvasDrawing = ({
         name: username,
         x: position.x,
         y: position.y,
+        avatar:avatar
       });
     }
 

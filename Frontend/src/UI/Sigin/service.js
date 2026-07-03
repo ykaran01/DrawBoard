@@ -4,9 +4,10 @@ import API from '@/service/API.sevice'
 export const registerUser = async (data) => {
     try {
         const response = await API.post('/user/register', data)
-        console.log(response.data)
+        
         return response.data.success
     } catch (err) {
+       
         throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }

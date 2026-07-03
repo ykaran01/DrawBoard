@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { DialogBox } from './DialogBox'
 import { registerUser } from './service'
 import { Link } from 'react-router-dom'
-// Importing Lucide Icons
+import {toast} from 'sonner'
 import { User, Mail, Lock, UserPlus, Loader2 } from 'lucide-react'
 
 const SignUp = () => {
@@ -25,6 +25,7 @@ const SignUp = () => {
 
     const handleSubmit = async () => {
         if (!info.email || !info.name || !info.password || !info.username) {
+            toast.error("Enter Right Details")
             return
         }
         
@@ -37,7 +38,7 @@ const SignUp = () => {
                 setopen(true)
             }
         } catch (err) {
-            alert(err.message)
+           toast.error(err.message)
         } finally {
             setIsSubmitting(false) 
         }

@@ -10,6 +10,7 @@ import { Merge } from 'lucide-react';
 import { PencilRuler } from 'lucide-react';
 import { createRoom, joinRoom } from "./services/services";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
   
@@ -49,7 +50,7 @@ export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
       setIsOpen(false);
       setMode("select"); 
     }catch(err){
-      alert(err.message)
+      toast.error(err.message)
     } 
     
     finally {

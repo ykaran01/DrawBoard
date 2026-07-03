@@ -7,17 +7,19 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { changename } from './services/services';
+import { toast } from 'sonner';
 const ChangeName = ({nameopen,setnameopen ,user}) => {
     const [newname, setname] = useState("")
     const handleSubmit = async()=>{
         if(!newname) return;
         try{
             await changename(newname.trim())
+            toast.success('Name Updated Successfully')
             user.name = newname.trim()
             setname("")
             setnameopen(false)
         }catch(err){
-            alert(err.message)
+            toast.error(err.message)
         }
 
     }

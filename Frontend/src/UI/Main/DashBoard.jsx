@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "@/Userprovider";
-import {  ArrowRight, Users, Zap, Shield } from "lucide-react";
+import {  ArrowRight, Users, Shield } from "lucide-react";
 
 const DashBoard = () => {
   const { user } = useContext(UserContext);

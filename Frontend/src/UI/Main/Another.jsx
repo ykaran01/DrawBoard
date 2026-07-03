@@ -18,6 +18,7 @@ import { getBoard } from './services/servies.js';
 import { saveBoard } from './services/servies.js';
 import { useNavigate } from 'react-router-dom';
 import { authoriseUser } from './services/servies.js';
+import {toast} from 'sonner'
 export const Another = () => {
 
   const canvasRef = useRef(null);
@@ -54,7 +55,7 @@ export const Another = () => {
         await authoriseUser(roomid, user?._id)
         
       } catch (err) {
-        alert(err.message)
+        toast.error(err.message)
         naviagte('/dash')
       }
     }
@@ -181,7 +182,7 @@ export const Another = () => {
 
       } catch (err) {
          naviagte('/dash')
-        alert(err.message)
+        toast.error(err.message)
       }
     };
 
@@ -205,7 +206,6 @@ export const Another = () => {
     setloading(false)
 
   }, [elements]);
-
 
 
 
@@ -252,7 +252,7 @@ export const Another = () => {
   useDrawingMode({
     canvasRef: canvasfileref, current, color, size, opacity: Opacity, background, chatopen});
 
-  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, username: user?.username ,ispanning ,toggle});
+  useCanvasDrawing({ canvasRef: canvasfileref, currentMode: current, setCurrentMode: setcurrent, color, size, socket, username: user?.username ,ispanning ,toggle,avatar:user?.avatar});
 
   if (loading) {
     return (
@@ -270,6 +270,7 @@ export const Another = () => {
     );
 
   }
+
 
   return (
     <>
@@ -305,12 +306,12 @@ export const Another = () => {
             className="relative w-full h-[85vh] bg-white    shadow shadow-purple-400 rounded-2xl overflow-hidden">
             <canvas
               ref={canvasRef}
-              className="absolute inset-0 cursor-crosshair "
+              className="absolute   "
             />
             {
               Object.keys(userspointer).map((key) => {
                 const pointer = userspointer[key];
-                console.log(userspointer)
+                
                 if (key === socket.id) {
                   return null
                 }
@@ -325,13 +326,13 @@ export const Another = () => {
                     className="absolute pointer-events-none"
                   >
 
-                    <img src={user?.avatar} className="w-4 h-4 bg-blue-500 rounded-full border-2 object-cover  border-white shadow-lg" />
+                    <img src={pointer?.avatar} className="w-4 h-4 bg-blue-500 rounded-full border-2 object-cover  border-white shadow-lg" />
 
 
 
-                    {pointer.name && (
+                    {pointer?.name && (
                       <span className="ml-4 px-2 py-0.5 text-xs bg-gray-800 text-white rounded shadow">
-                        {pointer.name}
+                        {pointer?.name}
                       </span>
                     )}
                   </div>

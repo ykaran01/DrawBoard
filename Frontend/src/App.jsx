@@ -6,6 +6,7 @@ import SignIn from './UI/Sigin/SignIn'
 import { UserProvider } from './Userprovider'
 import DashBoard from './UI/Main/DashBoard'
 import Home from './UI/Home/Home'
+import { Toaster } from 'sonner';
 const App = () => {
 
 
@@ -17,7 +18,9 @@ const App = () => {
         )
     }
     return (
+        
         <BrowserRouter>
+        <Toaster position="top-right" richColors />
             <Routes>
 
                 <Route path='/signup' element={<SignUp />} />

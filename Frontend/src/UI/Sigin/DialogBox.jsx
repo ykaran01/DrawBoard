@@ -7,30 +7,40 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
-export const DialogBox = ({ isOpen, setIsOpen ,email}) => {
+
+export const DialogBox = ({ isOpen, setIsOpen, email }) => {
     const navigate = useNavigate()
     const [otp, setOtp] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (otp.length < 6) return 
+        
+     
+        if (otp.length < 6) {
+            toast.warning("Please enter a valid 6-digit code.")
+            return 
+        }
 
-        try{
+        try {
             setIsLoading(true)
-            console.log(email)
-            const data = await verifyotp(email,otp)
-            if(data){
-                navigate('/signin')
+            const data = await verifyotp(email, otp)
+            
+            if (data) {
+              
+                toast.success("OTP verified successfully!")
+                setIsOpen(false) 
+                navigate('/login')
             }
-        }catch(err){
-            alert(err.message)
-        }finally{
+        } catch (err) {
+            
+            toast.error(err.message || "Invalid verification code. Please try again.")
+        } finally {
             setIsLoading(false)
             setOtp("")
         }
-        
     }
 
     return (
@@ -38,9 +48,6 @@ export const DialogBox = ({ isOpen, setIsOpen ,email}) => {
             <DialogContent className="sm:max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-xl animate-in fade-in-50 zoom-in-95">
                 
                 <DialogHeader className="flex flex-col items-center text-center space-y-2">
-                    
-                  
-
                     <DialogTitle className="text-2xl font-bold tracking-tight text-zinc-900">
                         Verification Code
                     </DialogTitle>
@@ -51,22 +58,24 @@ export const DialogBox = ({ isOpen, setIsOpen ,email}) => {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="mt-4 flex flex-col items-center gap-5 w-full">
-                    
-                    
                     <div className="w-full max-w-xs relative">
                         <input 
-                            type="number" 
+                            type="Number" 
+                            inputMode="numeric"
+                            pattern="[0-8]*"
                             maxLength={6} 
                             placeholder="000000"
                             value={otp}
-                            onChange={(e) => setOtp(e.target.value)} 
+                            onChange={(e) => {
+                              
+                               
+                                if (e.target.value.length <= 6) setOtp(e.target.value);
+                            }} 
                             className="w-full text-center tracking-[1em] text-2xl font-extrabold py-3 px-4 bg-zinc-50 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-zinc-800 placeholder:text-zinc-300 placeholder:tracking-normal transition-all"
                             required
-                           
                         />
                     </div>
 
-               
                     <button 
                         type="submit" 
                         disabled={otp.length < 6 || isLoading}
@@ -84,4 +93,3 @@ export const DialogBox = ({ isOpen, setIsOpen ,email}) => {
         </Dialog>
     )
 }
-
