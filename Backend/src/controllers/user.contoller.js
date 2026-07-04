@@ -99,10 +99,12 @@ export const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Login Unsuccesfull")
     }
 
-    const cookieOptions = {
-        httpOnly: true,
-        sameSite: "strict"
-    };
+    const cookieOptions ={
+  httpOnly: true,
+  secure: true,       
+  sameSite: 'None',    
+  maxAge: 4 * 24 * 60 * 60 * 1000,
+};
     const accessToken = await generaeteAccesstokenAndRefrehToken.generateaccesToken(email, user.isVerified, user._id)
     const refreshToken = await generaeteAccesstokenAndRefrehToken.generaterefreshToken(user._id)
     user.refreshToken = refreshToken;
@@ -112,8 +114,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     delete loggedInUser.verifyOTP
     return res
         .status(200)
-        .cookie("accessToken", accessToken)
-        .cookie("refreshToken", refreshToken)
+        .cookie("accessToken", accessToken,cookieOptions)
+        .cookie("refreshToken", refreshToken,cookieOptions)
         .json(
             new ApiResponse(
                 200,

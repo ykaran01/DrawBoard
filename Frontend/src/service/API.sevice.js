@@ -5,6 +5,21 @@ const API = axios.create({
     withCredentials: true
 });
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(API(prom.originalRequest));
+        }
+    });
+    
+    failedQueue = [];
+};
+
 
 
 export default API;
