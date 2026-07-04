@@ -156,11 +156,11 @@ const Home = () => {
       
       <div className="min-h-screen bg-slate-50 text-slate-900 font-sans w-full antialiased">
         
-        {/* Responsive Navbar */}
+      
         <nav className="bg-white border-b w-full border-slate-200 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-0 md:h-20 flex flex-col md:flex-row gap-4 md:gap-6 justify-between items-center">
             
-            {/* Logo */}
+           
             <div className="flex items-center gap-2 text-2xl font-bold tracking-tight text-slate-900 cursor-pointer w-full md:w-auto justify-between md:justify-start" onClick={() => navigate('/')}>
               <div className="flex items-center gap-2">
                 <LayoutDashboard size={26} className="text-indigo-600" />
@@ -168,7 +168,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Search and Filters */}
+            
             <div className="flex flex-col sm:flex-row items-center w-full md:max-w-xl flex-1 gap-3">
               <div className="flex w-full items-center rounded-xl shadow-zinc-300 hover:shadow-md border bg-zinc-100 px-3 py-2 transition-all">
                 <Search size={18} className="text-zinc-500 shrink-0" />
@@ -194,7 +194,6 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Actions (Create Button & Profile) */}
             <div className="flex gap-3 md:gap-4 items-center w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0" >
               <button
                 onClick={(e) => {
@@ -265,7 +264,7 @@ const Home = () => {
           </div>
         </nav>
 
-        {/* Board Main Workspace */}
+        
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

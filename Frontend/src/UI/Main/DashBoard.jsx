@@ -86,7 +86,7 @@ const DashBoard = () => {
             </div>
 
             <div className="border w-full min-h-[250px] sm:min-h-[280px] object-cover flex items-center justify-center">
-              <img className="w-full h-full" src="./Public/Home.png" alt="" />
+              <img className="w-full h-full" src="/Home.png" alt="" />
             </div>
           </div>
         </div>
