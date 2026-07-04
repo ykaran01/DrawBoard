@@ -226,5 +226,10 @@ export const logout = asyncHandler(async(req,res)=>{
     if (!user) {
         throw new ApiError(404, "User Not Found");
     }
-    res.clearCookie("refreshToken").clearCookie("accessToken").status(200).json(new ApiResponse(200, null, "User logged out successfully"));
+    const options = {
+        sameSite:"none",
+        secure:true,
+        httpOnly:true
+    }
+    res.clearCookie("refreshToken",options).clearCookie("accessToken",options).status(200).json(new ApiResponse(200, null, "User logged out successfully"));
 });

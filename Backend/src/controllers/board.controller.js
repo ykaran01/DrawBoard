@@ -12,13 +12,13 @@ export const createBoard = asyncHandler(async (req, res) => {
 
 
     if (!title || !password || !boardId) {
-        throw new ApiError(402, "data is not found")
+        throw new ApiError(400, "Data is not found")
     }
 
     const newpassword = await bcrypt.hash(password, 10)
     const board = await Board.create({
         boardId,
-        title: title || "Untitled Board",
+        title: title || 'Board',
         owner,
         password: newpassword
     });
@@ -26,8 +26,7 @@ export const createBoard = asyncHandler(async (req, res) => {
     if (!board) {
         throw new ApiError(500, "Board creation failed");
     }
-    const boardObject = board.toObject()
-    delete boardObject.password
+    
 
     return res.status(201).json(
         new ApiResponse(201, null, "Board created successfully")
@@ -207,6 +206,6 @@ export const searhBoard = asyncHandler(async(req,res)=>{
     if(!boards){
         throw new ApiError(401,'Board Does Not Found');
     }
-    res.status(200).json(new ApiResponse(200,boards,"Boards Fetcjed Succesfully"));
+    res.status(200).json(new ApiResponse(200,boards,"Boards Fetched Succesfully"));
 
 })
