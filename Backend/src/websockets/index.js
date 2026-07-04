@@ -4,7 +4,7 @@ import { rooms } from "./WebSockethepler.js"
 export const socketserver = (server) => {
     const io = new Server(server, {
         cors: {
-            origin: "draw-board-92ae.vercel.app"
+           origin: "https://draw-board-92ae.vercel.app",
         }
     })
     io.on("connection", (socket) => {
