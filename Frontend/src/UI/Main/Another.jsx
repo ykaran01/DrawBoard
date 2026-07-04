@@ -122,10 +122,7 @@ export const Another = () => {
     const lastObj = undoStack.current.pop();
     const targetId = lastObj.id || (lastObj.toObject && lastObj.toObject(['id']).id);
 
-    if (!targetId) {
-      console.error("Cannot undo: object is missing an ID", lastObj);
-      return;
-    }
+    
 
     const liveCanvasObject = canvas.getObjects().find(obj => obj.id === targetId);
 

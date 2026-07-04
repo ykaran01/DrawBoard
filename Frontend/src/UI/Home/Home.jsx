@@ -37,6 +37,7 @@ const Home = () => {
       setboards(data || []);
     } catch (err) {
       toast.error(err.message);
+      navigate('/login')
     } finally {
       setLoading(false);
     }
@@ -84,7 +85,7 @@ const Home = () => {
     e.stopPropagation();
 
     const file = selectedFiles[boardId];
-    if (!file) return alert("Please select an image first!");
+    if (!file) return toast.error("Please select an image first!");
 
     try {
       setUploadingBoardId(boardId);
