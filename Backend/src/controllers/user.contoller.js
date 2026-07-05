@@ -132,7 +132,7 @@ export const addOrUpdateAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Avatar file is required");
     }
 
-    const uploadedImage = await uploadOnCloudinary(req.file.buffer);
+    const uploadedImage = await uploadOnCloudnary(req.file.buffer);
 
     if (!uploadedImage || !uploadedImage.secure_url) {
         throw new ApiError(500, "Failed to upload avatar");
