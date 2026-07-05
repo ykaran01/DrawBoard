@@ -1,29 +1,29 @@
-import {v2 as cloudinary } from 'cloudinary'
+import { v2 as cloudinary } from 'cloudinary'
+
 
 import fs from 'fs'
-    cloudinary.config({ 
-        cloud_name:'djd2xqjzs', 
-        api_key: '593598238342361', 
-        api_secret: 'LJ95NhPEYpVlrZt0qZ-9-1jj5v0'
-    });
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+});
 
- export   const uploadOnCloudnary = async (localfilepath)=>{
-        try{
-            
-            if(!localfilepath) return;
-            const response = await cloudinary.uploader.upload(localfilepath,{
-              resource_type:'auto'
-            })
-            await fs.unlinkSync(localfilepath)
-            console.log('Uploaded Succesfully on Cloundanary ',response.url);
-            return response;
-            
+export const uploadOnCloudnary = (buffer) => {
+    return new Promise((resolve, reject) => {
+        if (!buffer)
+            return reject(new Error("Buffer is not prenent"))
 
-        }catch(error){
-            if(localfilepath)
-                fs.unlinkSync(localfilepath)
-        }
-    }
- 
+        const strem = cloudinary.uploader.upload_stream({
+            resource_type: 'auto'
+        }, (error, result) => {
+            if (error) {
+                return reject(error)
+            }
+            resolve(result)
+        })
+        strem.end(buffer)
+    })
+}
 
-    
+
+

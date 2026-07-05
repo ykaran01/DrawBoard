@@ -157,26 +157,37 @@ export const joinBoard = asyncHandler(async (req, res) => {
     );
 });
 
-export const changeImage = asyncHandler(async(req,res)=>{
-    const {roomId} = req.params
-   
-    const image = req.file;
-   
-    if(!image){
-      throw new  ApiError(404,'Image does not file')
-    }
-    const uploadedImage = await uploadOnCloudnary(image.path)
-    
-    const board = await Board.findById(roomId)
-    if(!board){
-        throw new ApiError(401,"Board Not found") 
-    }
-    board.image = uploadedImage.url
-    await board.save()
+export const changeImage = asyncHandler(async (req, res) => {
+  const { roomId } = req.params;
 
-    res.status(200).json(new ApiResponse(200,null,"Image Succesguuly Uploaded"))
+  if (!req.file) {
+    throw new ApiError(400, "Image file is required");
+  }
 
-})
+  const uploadedImage = await uploadOnCloudinary(req.file.buffer);
+
+  if (!uploadedImage) {
+    throw new ApiError(500, "Failed to upload image");
+  }
+
+  const board = await Board.findById(roomId);
+
+  if (!board) {
+    throw new ApiError(404, "Board not found");
+  }
+
+  board.image = uploadedImage.secure_url;
+
+  await board.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      board,
+      "Image uploaded successfully"
+    )
+  );
+});
 
 export const authoriseUser = asyncHandler(async(req,res)=>{
     const {roomId} = req.params

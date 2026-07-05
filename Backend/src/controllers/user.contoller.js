@@ -127,27 +127,28 @@ export const loginUser = asyncHandler(async (req, res) => {
 
 export const addOrUpdateAvatar = asyncHandler(async (req, res) => {
     const { _id } = req.user;
-    const file = req.file;
 
-    if (!file) {
+    if (!req.file) {
         throw new ApiError(400, "Avatar file is required");
     }
 
-    const image = await uploadOnCloudnary(file.path);
-    
-    if (!image || !image.url) {
+    const uploadedImage = await uploadOnCloudinary(req.file.buffer);
+
+    if (!uploadedImage || !uploadedImage.secure_url) {
         throw new ApiError(500, "Failed to upload avatar");
     }
-
 
     const user = await User.findByIdAndUpdate(
         _id,
         {
             $set: {
-                avatar: image.url,
+                avatar: uploadedImage.secure_url,
             },
         },
-        
+        {
+            new: true,
+            runValidators: true,
+        }
     );
 
     if (!user) {
@@ -155,7 +156,13 @@ export const addOrUpdateAvatar = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(
-        new ApiResponse(200, null, "Avatar updated successfully")
+        new ApiResponse(
+            200,
+            {
+                avatar: user.avatar,
+            },
+            "Avatar updated successfully"
+        )
     );
 });
 
