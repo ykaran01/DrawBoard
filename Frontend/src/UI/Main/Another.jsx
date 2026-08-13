@@ -269,7 +269,7 @@ export const Another = () => {
   }
 
 
-  return (
+return (
     <>
       <Messages chatopen={chatopen} setchatopen={setchatopen} roomid={roomid} />
       <Navabar
@@ -282,33 +282,36 @@ export const Another = () => {
         setoggle={setoggle}
         toggle={toggle}
       />
-        
-      
-      <div className="min-h-[85vh]  relative bg-purple-100 p-4">
 
-        <div className="flex gap-4 h-[90vh]">
-          <ToolsBar
-            current={current}
-            setcurrent={setcurrent}
-            fileInputRef={fileInputRef}
-            handleImageUpload={handleImageUpload}
-            addText={addText}
-            handleUndo={handleUndo}
-            handleRedo={handleRedo}
+      <div className="min-h-[85vh] relative bg-purple-100 p-2 sm:p-4">
 
-          />
+        <div className="flex flex-col md:flex-row gap-2 sm:gap-4 h-auto md:h-[90vh]">
+
+          {/* Toolbar: horizontal scroll strip on mobile, sidebar on desktop */}
+          <div className="w-full md:w-auto order-1 overflow-x-auto md:overflow-visible no-scrollbar">
+            <ToolsBar
+              current={current}
+              setcurrent={setcurrent}
+              fileInputRef={fileInputRef}
+              handleImageUpload={handleImageUpload}
+              addText={addText}
+              handleUndo={handleUndo}
+              handleRedo={handleRedo}
+            />
+          </div>
 
           <div
             style={{ pointerEvents: chatopen ? 'none' : 'auto' }}
-            className="relative w-full h-[85vh] bg-white    shadow shadow-purple-400 rounded-2xl overflow-hidden">
+            className="relative order-2 w-full flex-1 h-[60vh] md:h-[85vh] bg-white shadow shadow-purple-400 rounded-2xl overflow-hidden"
+          >
             <canvas
               ref={canvasRef}
-              className="absolute   "
+              className="absolute"
             />
             {
               Object.keys(userspointer).map((key) => {
                 const pointer = userspointer[key];
-                
+
                 if (key === socket.id) {
                   return null
                 }
@@ -322,10 +325,7 @@ export const Another = () => {
                     }}
                     className="absolute pointer-events-none"
                   >
-
-                    <img src={pointer?.avatar} className="w-4 h-4 bg-blue-500 rounded-full border-2 object-cover  border-white shadow-lg" />
-
-
+                    <img src={pointer?.avatar} className="w-4 h-4 bg-blue-500 rounded-full border-2 object-cover border-white shadow-lg" />
 
                     {pointer?.name && (
                       <span className="ml-4 px-2 py-0.5 text-xs bg-gray-800 text-white rounded shadow">
@@ -336,40 +336,37 @@ export const Another = () => {
                 );
               })
             }
-
-
           </div>
 
-
-          <Settings
-            size={size}
-            Opacity={Opacity}
-            setOpacity={setOpacity}
-            color={color}
-            setcolor={setcolor}
-            clearCanvas={clearCanavs}
-            setSize={setSize}
-            open={open}
-            onOpenChange={onOpenChange}
-            background={background}
-            setbackground={setbackground}
-          />
+          <div className="order-3 md:order-none">
+            <Settings
+              size={size}
+              Opacity={Opacity}
+              setOpacity={setOpacity}
+              color={color}
+              setcolor={setcolor}
+              clearCanvas={clearCanavs}
+              setSize={setSize}
+              open={open}
+              onOpenChange={onOpenChange}
+              background={background}
+              setbackground={setbackground}
+            />
+          </div>
         </div>
 
         <div onClick={() => {
           setchatopen(true)
-        }} className='absolute top-9 right-25 cursor-pointer  border border-purple-400 rounded-full bg-white w-10 h-10 flex justify-center items-center' >
-          <MessageCircle size={24} color='#dcb7e1' />
+        }} className='absolute top-4 sm:top-9 right-16 sm:right-24 cursor-pointer border border-purple-400 rounded-full bg-white w-9 h-9 sm:w-10 sm:h-10 flex justify-center items-center'>
+          <MessageCircle size={20} className="sm:w-6 sm:h-6" color='#dcb7e1' />
         </div>
         <div onClick={() => {
           onOpenChange(true)
-        }} className='absolute top-9 right-10  cursor-pointer  border border-purple-400 rounded-full bg-white w-10 h-10 flex justify-center items-center' >
-          <Menu size={24} color='#dcb7e1' />
-
+        }} className='absolute top-4 sm:top-9 right-4 sm:right-10 cursor-pointer border border-purple-400 rounded-full bg-white w-9 h-9 sm:w-10 sm:h-10 flex justify-center items-center'>
+          <Menu size={20} className="sm:w-6 sm:h-6" color='#dcb7e1' />
         </div>
 
       </div>
-
     </>
   );
 };

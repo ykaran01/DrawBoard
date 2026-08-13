@@ -8,9 +8,20 @@ import {
 } from "@/components/ui/dialog";
 import { Merge } from 'lucide-react';
 import { PencilRuler } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { createRoom, joinRoom } from "./services/services";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
+
+const generateRoomId = (length = 8) => {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789/#@&(&";
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+};
 
 export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
   
@@ -26,6 +37,15 @@ export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
     setRoomId("");
     setRoomName("");
     setPassword("");
+  };
+
+  const handleCreateMode = () => {
+    setMode("create");
+    setRoomId(generateRoomId());
+  };
+
+  const handleRegenerateId = () => {
+    setRoomId(generateRoomId());
   };
 
   const handleSubmit = async (e) => {
@@ -87,7 +107,7 @@ export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
 
               <button
                 type="button"
-                onClick={() => setMode("create")}
+                onClick={handleCreateMode}
                 className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-zinc-200 hover:border-purple-600 hover:bg-purple-50/50 transition text-center gap-2 group"
               >
                 <span className="text-2xl group-hover:scale-110 transition"><PencilRuler/></span>
@@ -123,13 +143,32 @@ export const JoinDialogBox = ({ isOpen, setIsOpen }) => {
               
                 <div className="flex flex-col gap-2">
                   <label className="font-medium text-sm text-zinc-700">Room ID</label>
-                  <input
-                    type="text"
-                    value={roomId}
-                    onChange={(e) => setRoomId(e.target.value)}
-                    placeholder="Enter Room ID"
-                    className="h-11 rounded-xl border border-zinc-300 px-4 outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-200"
-                  />
+                  {mode === "create" ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={roomId}
+                        readOnly
+                        className="h-11 flex-1 rounded-xl border border-zinc-300 px-4 bg-zinc-50 text-zinc-700 outline-none cursor-not-allowed"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRegenerateId}
+                        title="Generate a new Room ID"
+                        className="h-11 w-11 flex items-center justify-center rounded-xl border border-zinc-300 text-zinc-600 hover:text-purple-600 hover:border-purple-600 transition"
+                      >
+                        <RefreshCw size={18} />
+                      </button>
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={roomId}
+                      onChange={(e) => setRoomId(e.target.value)}
+                      placeholder="Enter Room ID"
+                      className="h-11 rounded-xl border border-zinc-300 px-4 outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-200"
+                    />
+                  )}
                 </div>
               
                 { mode=='create' && <div className="flex flex-col gap-2">

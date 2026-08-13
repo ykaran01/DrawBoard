@@ -73,15 +73,15 @@ const SignUp = () => {
                             <label className='flex items-center gap-1.5 text-sm font-medium text-zinc-700'>
                                 <User size={16} className="text-purple-500" /> Username
                             </label>
-                            <input value={info.username} onChange={onchange} name='username' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="text" disabled={isSubmitting} />
+                            <input placeholder='arjun_132' value={info.username} onChange={onchange} name='username' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="text" disabled={isSubmitting} />
                         </div>
 
-                        {/* Full Name Input */}
+                        
                         <div className='flex flex-col gap-1'>
                             <label className='flex items-center gap-1.5 text-sm font-medium text-zinc-700'>
-                                <User size={16} className="text-purple-500" /> Full Name
+                                <User   size={16} className="text-purple-500" /> Full Name
                             </label>
-                            <input value={info.name} onChange={onchange} name='name' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="text" disabled={isSubmitting} />
+                            <input placeholder='Arjun' value={info.name} onChange={onchange} name='name' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="text" disabled={isSubmitting} />
                         </div>
 
                         
@@ -89,7 +89,7 @@ const SignUp = () => {
                             <label className='flex items-center gap-1.5 text-sm font-medium text-zinc-700'>
                                 <Mail size={16} className="text-purple-500" /> Email
                             </label>
-                            <input value={info.email} onChange={onchange} name='email' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="email" disabled={isSubmitting} />
+                            <input placeholder='arjun@gmail.com' value={info.email} onChange={onchange} name='email' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="email" disabled={isSubmitting} />
                         </div>
 
                         
@@ -97,7 +97,7 @@ const SignUp = () => {
                             <label className='flex items-center gap-1.5 text-sm font-medium text-zinc-700'>
                                 <Lock size={16} className="text-purple-500" /> Password
                             </label>
-                            <input value={info.password} onChange={onchange} name='password' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="password" disabled={isSubmitting} />
+                            <input  placeholder='.........' value={info.password} onChange={onchange} name='password' className='py-2 px-2 bg-white border border-purple-500 rounded-xl w-90 outline-none focus:ring-2 focus:ring-purple-400' type="password" disabled={isSubmitting} />
                         </div>
 
                        

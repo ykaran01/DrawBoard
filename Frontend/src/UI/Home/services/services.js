@@ -47,7 +47,7 @@ export const deleteboard = async (boardId) => {
 export const changeImage = async (boardId, formdata) => {
     try {
         const { data } = await API.patch(`/board/changeImage/${boardId}`, formdata)
-        console.log(data)
+        
     } catch (err) {
         throw new Error(err.response?.data?.message || "Something went wrong");
     }
@@ -75,7 +75,7 @@ export const changename = async (name) => {
 export const logOut = async () => {
     try {
         const res = await API.post('/user/logout')
-        console.log(res.data)
+        
     } catch (err) {
         throw new Error(err.response?.data?.message || "Something went wrong");
     }

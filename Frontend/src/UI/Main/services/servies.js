@@ -29,7 +29,7 @@ export const saveBoard = (canvas, id) => {
                 { objects },
             );
 
-            console.log("Board Saved");
+            
         } catch (err) {
             throw new Error(err.response?.data?.message || "Something went wrong");
         }

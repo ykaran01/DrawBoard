@@ -54,7 +54,7 @@ export const useSocketCanvas = (canvasRef, setuserpointer) => {
       canvas.clear();
     };
     const handlepointer = (data) => {
-      console.log(data)
+      
       setuserpointer((prev) => ({
         ...prev,
         [data.id]: data
