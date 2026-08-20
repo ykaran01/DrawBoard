@@ -7,6 +7,8 @@ const user = Router()
 
 user.post('/register',joiMiddleware,registerUser)
 user.post('/login',loginUser)
+
+
 user.patch('/avatar',userMiddleware,upload.single("avatar"),addOrUpdateAvatar)
 user.post('/otp',verifyUser)
 user.get('/me',userMiddleware,getUser)

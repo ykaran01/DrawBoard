@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import bcrypt from 'bcryptjs'
+
 
 const userSchema = new mongoose.Schema({
 
@@ -39,25 +39,8 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    verifyOTP: {
-        type: Number
-    },
-    expireOTP: {
-        type: Date,
-    }
-
-
+    
 }, { timestamps: true })
 
 
-userSchema.pre("save", async function () {
-    if (!this.isModified("password")) return ;
-    this.password = await bcrypt.hash(this.password, 10);
-
-});
-
-userSchema.index({ createdAt: 1 }, {
-    expireAfterSeconds: 5 * 60,
-    partialFilterExpression: { isVerified: false }
-})
 export const  User = mongoose.model("User", userSchema)

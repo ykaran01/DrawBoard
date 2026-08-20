@@ -5,6 +5,7 @@ import { upload } from "../middleware/multter.middleware.js";
 const boardrouter = Router()
 
 boardrouter.use(userMiddleware)
+
 boardrouter.post('/create', createBoard)
 boardrouter.get('/get/:Id', getBoard)
 boardrouter.get('/myboards', getMyBoards)
