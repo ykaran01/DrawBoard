@@ -15,12 +15,13 @@ export const getBoard = async (id) => {
 }
 
 let saveTimer = null;
+
 export const saveBoard = (canvas, id) => {
     const objects = canvas.getObjects().map(obj =>
         obj.toObject(["id"])
     );
    
-    if (!id) return
+    if (!id) return;
     clearInterval(saveTimer)
     saveTimer = setTimeout(async () => {
         try {

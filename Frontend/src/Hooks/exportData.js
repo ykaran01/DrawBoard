@@ -54,6 +54,5 @@ export const convertjson = (canvasref)=>{
     document.body.removeChild(link)
     URL.revokeObjectURL(url);
 
-
-    
 }
+

@@ -13,7 +13,13 @@ export const userMiddleware = async (req, res, next) => {
         }
         
         const decodedData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
+        if(!decodedData.isVerified){
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorise."
+            });
+        }
+        
         req.user = decodedData;
         
         next();

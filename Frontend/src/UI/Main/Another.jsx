@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import { socket } from '../../socket.js';
 import ToolsBar from './ToolsBar.jsx';
@@ -81,7 +81,7 @@ export const Another = () => {
       id: Date.now().toString(),
       left: 300,
       top: 200,
-      fontSize: size * 10,
+      fontSize: size * 6,
       fill: color,
       selectable: true
     });
@@ -164,7 +164,6 @@ export const Another = () => {
    
     
   }
-
   useEffect(() => {
     const fetchBoard = async () => {
       try {
@@ -287,7 +286,7 @@ return (
 
         <div className="flex flex-col md:flex-row gap-2 sm:gap-4 h-auto md:h-[90vh]">
 
-          {/* Toolbar: horizontal scroll strip on mobile, sidebar on desktop */}
+          
           <div className="w-full md:w-auto order-1 overflow-x-auto md:overflow-visible no-scrollbar">
             <ToolsBar
               current={current}

@@ -68,8 +68,6 @@ export const useSocketCanvas = (canvasRef, setuserpointer) => {
     socket.on("clear", handleClear);
     socket.on("canvas_pointer", handlepointer)
     
-
-
     return () => {
       socket.off("canvas_recieve");
       socket.off("undo");

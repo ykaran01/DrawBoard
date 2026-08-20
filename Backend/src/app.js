@@ -3,7 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 const app = express()
 app.use(cors({
-  origin: "https://draw-board-92ae.vercel.app",
+  origin: "draw-board-liard.vercel.app",
   credentials:true
 }))
 app.use(cookieParser())

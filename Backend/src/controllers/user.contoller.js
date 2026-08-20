@@ -89,6 +89,9 @@ export const loginUser = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiResponse(404, "User do not Found");
     }
+    if(!user.isVerified){
+         throw new ApiResponse(404, "Unauthorise");
+    }
 
     const userpassword = await user.password
 
