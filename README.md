@@ -10,19 +10,21 @@ A modern **real-time collaborative whiteboard** built with the MERN stack, **Fab
 
 ##  Features
 
-* 🎨 Freehand drawing
-* 📐 Draw rectangles, circles, lines, and other shapes
-* ✏️ Pencil and eraser tools
-* 🌈 Custom colors and brush sizes
-* 🖐️ Canvas panning
-* 🔍 Zoom in & out
-* ⚡ Real-time collaboration using Socket.IO
-* 👥 Multiple users can draw simultaneously
-* 💾 Save whiteboards
-* 📂 Load previously created boards
-* 🔐 Secure authentication with JWT
-* ☁️ Cloud image storage
-* 🌙 Clean minimal UI
+*  Freehand drawing
+*  Draw rectangles, circles, lines, and other shapes
+*  Pencil and eraser tools
+*  Custom colors and brush sizes
+*  Canvas panning
+*  Zoom in & out
+*  Real-time collaboration using Socket.IO
+*  Multiple users can draw simultaneously
+*  Save whiteboards
+*  Load previously created boards
+*  Secure authentication with JWT
+*  Cloud image storage
+*  Clean minimal UI
+* Version History
+* Permissions Control
 ---
 
 ##  Tech Stack
@@ -94,7 +96,6 @@ cd drawboard
 * Sticky Notes
 * Voice Chat
 * Infinite Canvas
-* Version History
 * Board Sharing via Link
 * Comments
 * Templates
