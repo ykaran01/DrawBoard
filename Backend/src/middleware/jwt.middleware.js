@@ -50,11 +50,11 @@ export const socketAuth = async (socket, next) => {
     }
     const decoded =  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     if (!decoded) {
-      return new Error("User not found");
+      return  (new Error("User not found"));
     }
     socket.user = decoded;
     next();
   } catch (err) {
-    new Error("Invalid or expired token");
+    return next(new Error("Invalid or expired token"));
   }
 };

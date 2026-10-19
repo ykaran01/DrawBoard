@@ -12,7 +12,7 @@ import { tempUserModel } from "../models/tempUser.module.js";
 const cookieOptions = {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "none",
     maxAge: 4 * 24 * 60 * 60 * 1000
 };
 

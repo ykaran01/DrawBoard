@@ -1,25 +1,17 @@
 import { broradCast } from "./main.js";
-import { Server } from "socket.io";
-import { socketAuth } from "../middleware/jwt.middleware.js";
-
-const allowedOrigins = [
-  "https://draw-board-92ae.vercel.app",
-  "http://localhost:5173",
-];
+import { Server } from 'socket.io'
+import { socketAuth } from "../middleware/jwt.middleware.js"
 
 export const socketserver = (server) => {
-  const io = new Server(server, {
-    cors: {
-      origin: allowedOrigins,
-      methods: ["GET", "POST"],
-      credentials: true,
-    },
-    transports: ["polling", "websocket"],
-    pingTimeout: 60000,
-    pingInterval: 25000,
-  });
+    const io = new Server(server, {
+        cors: {
+            origin: "https://draw-board-92ae.vercel.app",
+            credentials: true
+        }
+    })
+    io.use(socketAuth)
+    io.on("connection", (socket) => {
+        broradCast(io, socket)
+    });
+}
 
-  io.use(socketAuth);
-    broradCast(io, socket);
-  return io;
-};
