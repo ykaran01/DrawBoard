@@ -1,6 +1,28 @@
 import { useEffect, useRef } from "react";
 import * as fabric from "fabric";
 
+const bakeScaleOnSave = (shape) => {
+  const original = shape.toObject.bind(shape);
+  shape.toObject = (props) => {
+    const obj = original(props);
+    const sx = shape.scaleX ?? 1;
+    const sy = shape.scaleY ?? 1;
+    if (sx === 1 && sy === 1) return obj;
+
+    if (shape instanceof fabric.Circle) {
+      obj.radius = shape.radius * sx;
+      obj.scaleX = 1;
+      obj.scaleY = sy / sx;
+    } else {
+      obj.width = shape.width * sx;
+      obj.height = shape.height * sy;
+      obj.scaleX = 1;
+      obj.scaleY = 1;
+    }
+    return obj;
+  };
+};
+
 export const useCanvasDrawing = ({
   canvasRef,
   currentMode,
@@ -11,9 +33,11 @@ export const useCanvasDrawing = ({
   username,
   ispanning,
   toggle,
-  avatar
+  avatar,
+  canEdit
   
 }) => {
+  
   const isDrawingShape = useRef(false);
   const startPointer = useRef({ x: 0, y: 0 });
   const activeShape = useRef(null);
@@ -33,6 +57,9 @@ export const useCanvasDrawing = ({
         lastposition.current = { x: X, y: Y };
         return;
       }
+
+      if (!canEdit) return;
+
       const validModes = ["rectangle", "circle", "triangle", "segment", "arrow"];
       if (!validModes.includes(currentMode)) return;
 
@@ -49,6 +76,8 @@ export const useCanvasDrawing = ({
         fill: (toggle) ? color : "transparent",
         stroke: color,
         strokeWidth: size,
+
+        strokeUniform: true,
         selectable: false,
         id: Date.now().toString(),
         
@@ -56,13 +85,16 @@ export const useCanvasDrawing = ({
 
       if (currentMode === "rectangle") {
         activeShape.current = new fabric.Rect(baseProperties);
+        bakeScaleOnSave(activeShape.current);   // SHAPE FIX
       } else if (currentMode === "circle") {
         activeShape.current = new fabric.Circle({
           ...baseProperties,
           radius: 0,
         });
+        bakeScaleOnSave(activeShape.current);   
       } else if (currentMode === "triangle") {
         activeShape.current = new fabric.Triangle(baseProperties);
+        bakeScaleOnSave(activeShape.current);  
       } else if (currentMode === "segment") {
         activeShape.current = new fabric.Line(
           [pointerPos.x, pointerPos.y, pointerPos.x, pointerPos.y],
@@ -96,6 +128,9 @@ export const useCanvasDrawing = ({
           }
         );
 
+        
+        line.programmatic = true;
+        triangle.programmatic = true;
         arrowRef.current = { line, triangle };
         canvas.add(line);
         canvas.add(triangle);
@@ -179,7 +214,10 @@ export const useCanvasDrawing = ({
       isDrawingShape.current = false;
       if (activeShape.current) {
         activeShape.current.set({ selectable: true });
+        activeShape.current.setCoords();
         canvas.setActiveObject(activeShape.current);
+
+        canvas.fire("object:modified", { target: activeShape.current });
       }
 
       if (arrowRef.current) {
@@ -248,5 +286,6 @@ export const useCanvasDrawing = ({
       canvas.off("mouse:wheel", Zoomproblem)
       canvas.off("mouse:move", sendingCurrent)
     };
-  }, [currentMode, color, size, canvasRef, setCurrentMode, socket]);
+
+  }, [currentMode, color, size, canvasRef, setCurrentMode, socket, canEdit, toggle, username, avatar]);
 };

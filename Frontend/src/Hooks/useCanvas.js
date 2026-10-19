@@ -5,11 +5,11 @@ import { setupBrush } from "@/utils/setupBrush";
 
 
 import { saveBoard } from "@/UI/Main/services/servies";
-export const usecanvs = (canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, id) => {
+export const usecanvs = (canvasRef, canvasfileref, background, current, undoStack, redoStack, color, size, Opacity, id,canEdit) => {
     
-   
     useEffect(() => {
         if (!canvasRef.current) return;
+       
         const width = canvasRef.current.parentElement?.clientWidth
         const higth = canvasRef.current.parentElement?.clientHeight
         const canvas = new fabric.Canvas(canvasRef.current, {
@@ -19,7 +19,8 @@ export const usecanvs = (canvasRef, canvasfileref, background, current, undoStac
             isDrawingMode: current === "line" || current === 'eraser'
         });
         canvasfileref.current = canvas;
-
+        canvas.selection = canEdit;
+        canvas.skipTargetFind = !canEdit;
         if (canvas.isDrawingMode) {
             setupBrush(canvas, current, color, size, Opacity, background);
         }
@@ -35,22 +36,26 @@ export const usecanvs = (canvasRef, canvasfileref, background, current, undoStac
             redoStack.current = [];
             socket.emit("canvas-data", options.target.toObject(["id"]));
             
-            await  saveBoard(canvas,id)
+            if(canEdit){
+                await saveBoard(canvas,id)
+            }
            
         });
 
         canvas.on("object:modified", async(options) => {
             if (options.target.programmatic) return;
             socket.emit("canvas-data", options.target.toObject(["id"]));
-            
-             await saveBoard(canvas,id)
+            if(canEdit){
+                await saveBoard(canvas,id)
+            }
+             
              
         });
 
         return () => {
             canvas.dispose();
         };
-    }, []);
+    }, [canEdit]);
     
 
 }

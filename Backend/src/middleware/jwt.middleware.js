@@ -38,3 +38,23 @@ export const userMiddleware = async (req, res, next) => {
         });
     }
 };
+
+
+export const socketAuth = async (socket, next) => {
+  try {
+    const cookies = socket.handshake.headers?.cookie;
+    let token = cookies.split(";").find((cookie)=>cookie.trim().startsWith("accessToken="))
+    token = token.split("=")[1]
+    if (!token) {
+      return next(new Error("Authentication required"));
+    }
+    const decoded =  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    if (!decoded) {
+      return new Error("User not found");
+    }
+    socket.user = decoded;
+    next();
+  } catch (err) {
+    new Error("Invalid or expired token");
+  }
+};

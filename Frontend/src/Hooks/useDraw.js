@@ -8,23 +8,25 @@ export const useDrawingMode = ({
   size,
   opacity,
   background,
+  canEdit
 }) => {
+  
 
   useEffect(() => {
     const canvas = canvasRef.current;
 
     if (!canvas) return;
 
-    canvas.isDrawingMode =
-      current === "line" || current === "eraser";
+    canvas.isDrawingMode = canEdit && 
+      (current === "line" || current === "eraser");
 
-    canvas.selection =
+    canvas.selection = canEdit && 
       current === "select";
 
     canvas.backgroundColor = background;
 
     canvas.forEachObject((obj) => {
-      obj.selectable =
+      obj.selectable = canEdit && 
         current === "select";
     });
 
@@ -48,5 +50,6 @@ export const useDrawingMode = ({
     size,
     opacity,
     background,
+  
   ]);
 };

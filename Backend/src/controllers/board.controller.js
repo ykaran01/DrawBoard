@@ -26,7 +26,7 @@ export const createBoard = asyncHandler(async (req, res) => {
     if (!board) {
         throw new ApiError(500, "Board creation failed");
     }
-    
+
 
     return res.status(201).json(
         new ApiResponse(201, null, "Board created successfully")
@@ -35,9 +35,10 @@ export const createBoard = asyncHandler(async (req, res) => {
 
 export const getBoard = asyncHandler(async (req, res) => {
     const { Id } = req.params;
-   
-    const board = await Board.findOne({ boardId: Id }).select('-password -boardId ').populate('users', 'username email');
     
+    const board = await Board.findOne({ boardId: Id }).select('-password -boardId ').populate('users', 'username email');
+  
+
     if (!board) {
         throw new ApiError(404, "Board not found");
     }
@@ -48,12 +49,12 @@ export const getBoard = asyncHandler(async (req, res) => {
 });
 
 export const getMyBoards = asyncHandler(async (req, res) => {
-    
+
     const boards = await Board.find({
         owner: req.user._id
     }).select('-password -elements ');
-  
-     res.status(200).json(
+
+    res.status(200).json(
         new ApiResponse(200, boards, "Boards fetched successfully")
     );
 });
@@ -63,6 +64,7 @@ export const updateBoard = asyncHandler(async (req, res) => {
     const { title } = req.body;
 
     const board = await Board.findOne({ boardId: Id });
+
 
     if (!board) {
         throw new ApiError(404, "Board not found");
@@ -84,7 +86,7 @@ export const updateBoard = asyncHandler(async (req, res) => {
 export const deleteBoard = asyncHandler(async (req, res) => {
     const { Id } = req.params;
 
-    const board = await Board.findById( Id );
+    const board = await Board.findById(Id);
 
     if (!board) {
         throw new ApiError(404, "Board not found");
@@ -104,15 +106,27 @@ export const deleteBoard = asyncHandler(async (req, res) => {
 export const addElement = asyncHandler(async (req, res) => {
     const { objects } = req.body
     const { id } = req.params
-    
+    const { _id } = req.user
+   
     if (!id) {
         throw new ApiError(400, "Id is Not Given");
     }
-    const board = await Board.findOneAndUpdate({ boardId: id },
-        { $set: { elements: objects } })
+    
+    const board = await Board.findOne({ boardId: id })
     if (!board) {
         throw new ApiError(404, "Board Doest not found")
     }
+    
+    const role = board.owner.toString() === _id.toString() ? "admin" : board.users.find((u) => u.user.toString() === _id.toString())?.role
+   
+    if (role !== "admin" && role !== "editor") {
+        throw new ApiError(403, "You cannot edit this board");
+    }
+    
+    board.elements = objects;
+    await board.save();
+    
+
 
     res.status(200).json(new ApiResponse(200, null, "Board updated Successfully"))
 
@@ -121,7 +135,7 @@ export const addElement = asyncHandler(async (req, res) => {
 export const joinBoard = asyncHandler(async (req, res) => {
     const { boardId, password } = req.body;
     const userId = req.user._id;
-  
+
     if (!boardId || !password) {
         throw new ApiError(400, "Board ID and password are required");
     }
@@ -142,10 +156,13 @@ export const joinBoard = asyncHandler(async (req, res) => {
     }
 
     const alreadyJoined = board.users.some(
-        (id) => id.toString() === userId.toString()
+        (u) => u.user === userId
     );
     if (!alreadyJoined) {
-        board.users.push(userId);
+        board.users.push({
+            user: userId,
+            role: "viewer"
+        });
         await board.save();
     }
     return res.status(200).json(
@@ -158,65 +175,71 @@ export const joinBoard = asyncHandler(async (req, res) => {
 });
 
 export const changeImage = asyncHandler(async (req, res) => {
-  const { roomId } = req.params;
+    const { roomId } = req.params;
 
-  if (!req.file) {
-    throw new ApiError(400, "Image file is required");
-  }
+    if (!req.file) {
+        throw new ApiError(400, "Image file is required");
+    }
 
-  const uploadedImage = await uploadOnCloudnary(req.file.buffer);
+    const uploadedImage = await uploadOnCloudnary(req.file.buffer);
 
-  if (!uploadedImage) {
-    throw new ApiError(500, "Failed to upload image");
-  }
+    if (!uploadedImage) {
+        throw new ApiError(500, "Failed to upload image");
+    }
 
-  const board = await Board.findById(roomId);
+    const board = await Board.findById(roomId);
 
-  if (!board) {
-    throw new ApiError(404, "Board not found");
-  }
+    if (!board) {
+        throw new ApiError(404, "Board not found");
+    }
 
-  board.image = uploadedImage.secure_url;
+    board.image = uploadedImage.secure_url;
 
-  await board.save();
+    await board.save();
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      board,
-      "Image uploaded successfully"
-    )
-  );
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            board,
+            "Image uploaded successfully"
+        )
+    );
 });
 
-export const authoriseUser = asyncHandler(async(req,res)=>{
-    const {roomId} = req.params
-    const {_id} = req.user
-    
-    const board = await Board.findOne({boardId:roomId})
-    if(!board){
-        throw new ApiError(401,"Board Not found") 
+export const authoriseUser = asyncHandler(async (req, res) => {
+    const { roomId } = req.params
+    const { _id } = req.user
+
+    const board = await Board.findOne({ boardId: roomId })
+    if (!board) {
+        throw new ApiError(401, "Board Not found")
     }
-    if(!board.users.includes(_id)  && board.owner.toString() !== _id.toString()){
-        throw new ApiError(401,"User Not Authorised")
+    const user = board.users.find((u) => u.user?.toString() === _id.toString())
+
+    if (!user && board.owner.toString() !== _id.toString()) {
+        throw new ApiError(401, "User Not Authorised")
     }
-    
-    res.status(200).json(new ApiResponse(200,null,"User Authorised"))
+
+    res.status(200).json(new ApiResponse(200, null, "User Authorised"))
 
 
 })
 
-export const searhBoard = asyncHandler(async(req,res)=>{
-    const {name="" , sort=-1} = req.query
+export const searhBoard = asyncHandler(async (req, res) => {
+    const { name = "", sort = -1 } = req.query
     const owner = req.user._id
-    
-    const boards = await Board.find({$and:
-        [{owner:owner},
-            {title:{$regex:name,$options:'i'}}]})
-            .sort({createdAt:Number(sort)}).select("-password -elements");
-    if(!boards){
-        throw new ApiError(401,'Board Does Not Found');
+
+    const boards = await Board.find({
+        $and:
+            [{ owner: owner },
+            { title: { $regex: name, $options: 'i' } }]
+    })
+        .sort({ createdAt: Number(sort) }).select("-password -elements");
+    if (!boards) {
+        throw new ApiError(401, 'Board Does Not Found');
     }
-    res.status(200).json(new ApiResponse(200,boards,"Boards Fetched Succesfully"));
+    res.status(200).json(new ApiResponse(200, boards, "Boards Fetched Succesfully"));
 
 })
+
+

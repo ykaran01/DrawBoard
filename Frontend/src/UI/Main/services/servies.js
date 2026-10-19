@@ -1,4 +1,5 @@
 import API from "@/service/API.sevice"
+let saveTimer = null;
 
 export const getBoard = async (id) => {
     try {
@@ -14,15 +15,13 @@ export const getBoard = async (id) => {
     }
 }
 
-let saveTimer = null;
-
 export const saveBoard = (canvas, id) => {
     const objects = canvas.getObjects().map(obj =>
         obj.toObject(["id"])
     );
    
     if (!id) return;
-    clearInterval(saveTimer)
+    clearTimeout(saveTimer)
     saveTimer = setTimeout(async () => {
         try {
 
@@ -54,5 +53,51 @@ export const authoriseUser = async(roomId)=>{
         
     }catch(err){
       throw new Error(err.response?.data?.message || "Something went wrong");
+    }
+}
+
+export const  getUserAllVersion = async(roomId)=>{
+
+    try{
+        console.log(roomId)
+        const {data} = await API.get(`/version/${roomId}/all`)
+        console.log(data)
+        return data.data
+    }catch(err){
+        throw new Error(err.response?.data?.message || "Something went wrong");
+    }
+}
+
+export const saveboard =  async(roomId, canvas,message)=>{
+    const objects = canvas.getObjects().map(obj =>
+        obj.toObject(["id"])
+    );
+    try{
+         const {data} =  await API.post(`/version/${roomId}`, { objects ,message});
+         console.log(data)
+         return data.success;
+    }catch(err){
+        throw new Error(err.response?.data?.message || "Something went wrong");
+    }
+   
+}
+
+export const getVersion = async(versionId)=>{
+    try{
+        const {data} = await API.get(`/version/${versionId}`)
+    
+        return {success:data.success,elements:data.data.elements}
+    }catch(err){
+        throw new Error(err.response?.data?.message || "Something went wrong");
+    }
+}
+
+export const deleteVersion = async(versionId)=>{
+    try{  
+        const {data} = await API.delete(`/version/${versionId}`)
+        return data.success
+    }
+    catch(err){
+        throw new Error(err.response?.data?.message || "Something went wrong");
     }
 }
