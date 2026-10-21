@@ -13,7 +13,7 @@ import { deleteVersion, getUserAllVersion, getVersion } from "./services/servies
 import { saveBoard } from './services/servies';
 import { socket } from '@/socket';
 import { toast } from 'sonner';
-const Version = ({ open, onOpenChange, roomId, setElements, undoStack, canvasfileref, redoStack, canEdit, setVersionOpen }) => {
+const Version = ({ open, onOpenChange, roomId, setElements, undoStack, canvasfileref, redoStack, canEdit, setVersionOpen ,attachTextSync}) => {
   const [versionss, setversionss] = useState([])
   const [loading, setloading] = useState(false)
 
@@ -31,38 +31,49 @@ const Version = ({ open, onOpenChange, roomId, setElements, undoStack, canvasfil
 
   }, [roomId])
 
-  const restoreThePage = async (id) => {
-    if (!canEdit) return;
-    const canvas = canvasfileref.current;
-    if (!canvas) return;
-    try {
-      const { success, elements } = await getVersion(id)
-      if (success && Array.isArray(elements)) {
-        canvas.getObjects().forEach((obj) => {
-          obj.programmatic = true
-          canvas.remove(obj)
-        })
-        const objects = await fabric.util.enlivenObjects(elements);
-        objects.forEach((obj) => {
-          obj.programmatic = true;
-          canvas.add(obj);
-          if (obj instanceof fabric.IText) attachTextSync(obj);
-        });
-        canvas.requestRenderAll();
-        undoStack.current = [...objects];
-        redoStack.current = [];
-        socket.emit("clear-canvas", []);
-        objects.forEach((obj) => socket.emit("canvas-data", obj.toObject(["id"])));
-        await saveBoard(canvas, roomId);
-        setVersionOpen(false);
-        toast.success("Version restored");
-        setElements(elements)
+const restoreThePage = async (id) => {
+  if (!canEdit) return;
+  const canvas = canvasfileref.current;
+  if (!canvas) return;
 
-      }
-    } catch (err) {
-      console.log(err.message)
+  try {
+    const { success, elements } = await getVersion(id);
+    if (!success || !Array.isArray(elements)) {
+      toast.error("Could not load this version");
+      return;
     }
+
+    const objects = await fabric.util.enlivenObjects(elements);
+
+  
+    canvas.getObjects().forEach((obj) => {
+      obj.programmatic = true;
+      canvas.remove(obj);
+    });
+
+    objects.forEach((obj) => {
+      obj.programmatic = true;
+      canvas.add(obj);
+      if (obj instanceof fabric.IText) attachTextSync?.(obj);
+    });
+    canvas.requestRenderAll();
+
+    undoStack.current = [...objects];
+    redoStack.current = [];
+
+    socket.emit("clear-canvas", []);
+    objects.forEach((obj) => socket.emit("canvas-data", obj.toObject(["id"])));
+
+    await saveBoard(canvas, roomId);
+
+    setElements(elements);
+    setVersionOpen(false);
+    toast.success("Version restored");
+  } catch (err) {
+    console.error("restore failed:", err);
+    toast.error(err.message || "Restore failed");
   }
+};
 
   const deleteTheRecord = async (_id) => {
     try {

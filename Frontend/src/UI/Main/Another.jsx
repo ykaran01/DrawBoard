@@ -337,7 +337,7 @@ export const Another = () => {
 
       canvas.requestRenderAll();
     })
-  },[])
+  },[elements])
 
   if (loading) {
     return (
@@ -360,7 +360,7 @@ export const Another = () => {
   return (
     <>
     <Version open={versionOpen} onOpenChange={setVersionOpen} roomId={roomid} canvasfileref={canvasfileref} undoStack={undoStack}
-        setElements={setElements} redoStack={redoStack} canEdit={canEdit} setVersionOpen={setVersionOpen}/>
+        setElements={setElements} redoStack={redoStack} canEdit={canEdit} setVersionOpen={setVersionOpen} attachTextSync={attachTextSync}/>
       <Messages chatopen={chatopen} setchatopen={setchatopen} roomid={roomid} />
       <Navabar
         handleUndo={handleUndo}

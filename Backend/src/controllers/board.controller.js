@@ -104,33 +104,43 @@ export const deleteBoard = asyncHandler(async (req, res) => {
 });
 
 export const addElement = asyncHandler(async (req, res) => {
-    const { objects } = req.body
-    const { id } = req.params
-    const { _id } = req.user
-   
+    const { objects } = req.body;
+    const { id } = req.params;
+    const { _id } = req.user;
+
     if (!id) {
-        throw new ApiError(400, "Id is Not Given");
+        throw new ApiError(400, "Id is not given");
     }
-    
-    const board = await Board.findOne({ boardId: id })
+
+    if (!Array.isArray(objects)) {
+        throw new ApiError(400, "Invalid board elements");
+    }
+
+    const board = await Board.findOne({ boardId: id });
+
     if (!board) {
-        throw new ApiError(404, "Board Doest not found")
+        throw new ApiError(404, "Board not found");
     }
-    
-    const role = board.owner.toString() === _id.toString() ? "admin" : board.users.find((u) => u.user.toString() === _id.toString())?.role
-   
+
+    const isOwner = board.owner.toString() === _id.toString();
+
+    const member = board.users.find(
+        (u) => u.user.toString() === _id.toString()
+    );
+
+    const role = isOwner ? "admin" : member?.role;
+
     if (role !== "admin" && role !== "editor") {
         throw new ApiError(403, "You cannot edit this board");
     }
-    
+
     board.elements = objects;
     await board.save();
-    
 
-
-    res.status(200).json(new ApiResponse(200, null, "Board updated Successfully"))
-
-})
+    return res.status(200).json(
+        new ApiResponse(200, null, "Board updated successfully")
+    );
+});
 
 export const joinBoard = asyncHandler(async (req, res) => {
     const { boardId, password } = req.body;
