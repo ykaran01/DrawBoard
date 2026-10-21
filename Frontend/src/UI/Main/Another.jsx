@@ -337,7 +337,7 @@ export const Another = () => {
 
       canvas.requestRenderAll();
     })
-  },[elements])
+  })
 
   if (loading) {
     return (
